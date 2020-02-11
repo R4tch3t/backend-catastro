@@ -51,7 +51,7 @@ padronU = () => {
               //setResponse()
               sql = `SELECT * FROM ubipredio${inJSON.tp} u `
               sql += `WHERE u.CTA=${result[0].CTA} ORDER by u.CTA DESC`
-              console.log(sql)
+              //console.log(sql)
               con.query(sql, (err, result, fields) => {
                 
                 if (!err) {
@@ -80,7 +80,7 @@ padronU = () => {
                     });
                   } else {
                     outJSON.ubicacion = [{
-                      calle: '', numero: '', colonia: '', cp: '', municipio: '', localidad: '', basegrav: ''
+                      calle: '', numero: 0, colonia: '', cp: 0, municipio: '', localidad: '', basegrav: 0
                     }]
                     setResponse()
                   }

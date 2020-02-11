@@ -42,10 +42,12 @@ registrar = () => {
               if(result.length===0){
                   sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,numero,colonia,cp,municipio,localidad) VALUES `
                   sql += `(${inJSON.CTA},'${inJSON.calle}',`
-                  sql += `'${inJSON.numero}','${inJSON.colonia}',`
-                  sql += `'${inJSON.cp}','${inJSON.municipio}',`;
+                  sql += `${inJSON.numero},'${inJSON.colonia}',`
+                  sql += `${inJSON.cp},'${inJSON.municipio}',`;
                   sql += `'${inJSON.localidad}')`;
+                  console.log(sql)
                   con.query(sql, (err, result, fields) => {
+                    console.log(err)
                     if (!err) {
                   
                       sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,zona,bg,periodo,total) VALUES `
@@ -83,8 +85,8 @@ registrar = () => {
                   });
               }else{
                 sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', `
-                sql += `numero='${inJSON.numero}', colonia='${inJSON.colonia}', `
-                sql += `cp='${inJSON.cp}', municipio='${inJSON.municipio}', `;
+                sql += `numero=${inJSON.numero}, colonia='${inJSON.colonia}', `
+                sql += `cp=${inJSON.cp}, municipio='${inJSON.municipio}', `;
                 sql += `localidad='${inJSON.localidad}' WHERE CTA=${inJSON.CTA}`;
                 con.query(sql, (err, result, fields) => {  
                     sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
@@ -113,7 +115,7 @@ registrar = () => {
                         }else{
                           let idOrden = result[0].idOrden
                           sql = `UPDATE ordenes${inJSON.tp} SET m1=${inJSON.m1}, m2=${inJSON.m2}, zona='${inJSON.zona}', `
-                          sql += `bg=${inJSON.bg} WHERE idOrden=${idOrden}`
+                          sql += `bg=${inJSON.bg}, total=${inJSON.total} WHERE idOrden=${idOrden}`
                           con.query(sql, (err, result, fields) => {
                             if (!err) {
 
