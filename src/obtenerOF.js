@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
         password: process.env.NODE_MYSQL_PASS,
-        database: "dbsegsistema"
+        database: "dbcatastro"
   });
 
 setResponse = () => {
@@ -25,25 +25,29 @@ setResponse = () => {
   res.end(`${outJSON}`);
 }
 
-obtenerQ = () => {
+obtenerOF = () => {
     try{
     con.connect((err) => {
       outJSON = {};
       outJSON.error = {};
       if (err) {
         console.log(`Error: ${err}`);
-      } else {
-        var subquery = ''
-        if (inJSON.idQuincena !== '' && inJSON.idQuincena !== undefined) {
-          subquery = `AND dq.idQuincena=${inJSON.idQuincena}`
-        }
-
-        var sql = `SELECT * FROM quincenas q, descuentos_quincenas dq WHERE dq.idEmpleado=${inJSON.idUsuario} AND q.idQuincena=dq.idQuincena  ORDER BY dq.idQuincena ASC`
+      } else {        
+        let sql = `SELECT * FROM ordenesu o, padronu pa, ubiprediou u WHERE `
+        /*if (inJSON.ff === inJSON.fi){
+          sql += `o.dateUp>='${inJSON.fi}' AND o.dateUp<'${inJSON.fi}' `
+        }else{*/
+          sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
+       // }
+        sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
+        console.log(sql)
         con.query(sql, (err, result, fields) => {
           if (!err) {
             if(result.length>0){
-              outJSON.quincenas = result
-              sql = `SELECT * FROM descuentos_quincenas dq, quincenas q WHERE dq.idEmpleado=${inJSON.idUsuario} ${subquery} AND q.idQuincena = dq.idQuincena`
+              outJSON.ordenes = result
+              console.log(result)
+              setResponse()
+              /*sql = `SELECT * FROM descuentos_quincenas dq, quincenas q WHERE dq.idEmpleado=${inJSON.idUsuario} ${subquery} AND q.idQuincena = dq.idQuincena`
               con.query(sql, (err, result, fields) => {
                 if (!err) {
                   if (result.length > 0) {
@@ -56,8 +60,11 @@ obtenerQ = () => {
 
                 }
               });
+              */
             }else{
-              outJSON.error.name='error01'
+              outJSON.error.name='error01';
+              outJSON.ordenes = [];
+              setResponse();
             }
           }else{
 
@@ -89,9 +96,9 @@ obtenerQ = () => {
           outJSON.error.name = `${e}`;
       }
 
-      if (inJSON.idUsuario !== undefined) {
+      if (inJSON.fi!== undefined) {
 
-        obtenerQ()
+        obtenerOF()
         
       }else{
         res.end()

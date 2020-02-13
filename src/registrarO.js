@@ -42,24 +42,28 @@ registrar = () => {
               if(result.length===0){
                   sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,numero,colonia,cp,municipio,localidad) VALUES `
                   sql += `(${inJSON.CTA},'${inJSON.calle}',`
-                  sql += `${inJSON.numero},'${inJSON.colonia}',`
-                  sql += `${inJSON.cp},'${inJSON.municipio}',`;
+                  sql += `'${inJSON.numero}','${inJSON.colonia}',`
+                  sql += `'${inJSON.cp}','${inJSON.municipio}',`;
                   sql += `'${inJSON.localidad}')`;
                   console.log(sql)
                   con.query(sql, (err, result, fields) => {
-                    console.log(err)
+                    
                     if (!err) {
                   
-                      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,zona,bg,periodo,total) VALUES `
-                      sql += `(${inJSON.CTA},${inJSON.m1},`
-                      sql += `${inJSON.m2},'${inJSON.zona}',${inJSON.bg},`
-                      sql += `'${inJSON.periodo}',${inJSON.total})`;
+                      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total) VALUES `
+                      sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
+                      sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
+                      sql += `'${inJSON.periodo}','${inJSON.total}')`;
                       con.query(sql, (err, result, fields) => {
                         if (!err) { 
                             sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
                             con.query(sql, (err, result, fields) => {
 
                               let c = 0;
+                              if (inJSON.idImpuestos.length === 0) {
+                                outJSON.exito = 0
+                                setResponse()
+                              }
                               inJSON.idImpuestos.forEach(element => {
                                 sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
                                 sql += `(${result[0].idOrden},'${element.id}',`
@@ -85,8 +89,8 @@ registrar = () => {
                   });
               }else{
                 sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', `
-                sql += `numero=${inJSON.numero}, colonia='${inJSON.colonia}', `
-                sql += `cp=${inJSON.cp}, municipio='${inJSON.municipio}', `;
+                sql += `numero='${inJSON.numero}', colonia='${inJSON.colonia}', `
+                sql += `cp='${inJSON.cp}', municipio='${inJSON.municipio}', `;
                 sql += `localidad='${inJSON.localidad}' WHERE CTA=${inJSON.CTA}`;
                 con.query(sql, (err, result, fields) => {  
                     sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
@@ -114,11 +118,10 @@ registrar = () => {
 
                         }else{
                           let idOrden = result[0].idOrden
-                          sql = `UPDATE ordenes${inJSON.tp} SET m1=${inJSON.m1}, m2=${inJSON.m2}, zona='${inJSON.zona}', `
-                          sql += `bg=${inJSON.bg}, total=${inJSON.total} WHERE idOrden=${idOrden}`
+                          sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
+                          sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}' WHERE idOrden=${idOrden}`
                           con.query(sql, (err, result, fields) => {
                             if (!err) {
-
                               let c = 0;
                               if (inJSON.removI.length === 0) {
                                 inJSON.removI = [{id: -1}]
@@ -137,7 +140,7 @@ registrar = () => {
                                         setResponse()
                                       }
                                       inJSON.idImpuestos.forEach(element => {
-                                        sql = `UPDATE predial${inJSON.tp} SET val=${element.val} `
+                                        sql = `UPDATE predial${inJSON.tp} SET val='${element.val}' `
                                         sql += `WHERE idOrden=${idOrden} AND idImpuesto=${element.id} `
                                         con.query(sql, (err, result, fields) => {
                                           if (!err) {
