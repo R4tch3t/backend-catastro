@@ -1,6 +1,6 @@
 const http = require('http');
 const hostname = '0.0.0.0';
-const port = 3015;
+const port = 3021;
 const mysql = require('mysql');
 
 const server = http.createServer((req, res) => {
@@ -17,57 +17,41 @@ const server = http.createServer((req, res) => {
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
         password: process.env.NODE_MYSQL_PASS,
-        database: "dbsegsistema"
+        database: "dbcatastro"
   });
 
- // console.log(`${res.host} : ${res.statusCode}`);
 setResponse = () => {
   outJSON = JSON.stringify(outJSON);
   res.end(`${outJSON}`);
 }
 
-obtenerQ = () => {
+saveZ = () => {
     try{
     con.connect((err) => {
       outJSON = {};
       outJSON.error = {};
       if (err) {
         console.log(`Error: ${err}`);
-      } else {
-        var subqueryQ = ''
-        var subqueryU = ''
-        if (inJSON.idQuincena !== '' && inJSON.idQuincena !== undefined) {
-          subqueryQ = `AND q.idQuincena=${inJSON.idQuincena}`
-        }
-        if (inJSON.idUsuario !== '' && inJSON.idUsuario !== undefined) {
-          subqueryU = `AND dq.idEmpleado=${inJSON.idUsuario}`
-        }
-        var sql = `SELECT * FROM quincenas ORDER by idQuincena ASC`
+      } else {        
+        let sql = `SELECT * FROM zonac WHERE calle LIKE '%${inJSON.street}%' AND colonia LIKE '%${inJSON.barr}%' `
+        //sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
+        //sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
+        console.log(sql)
         con.query(sql, (err, result, fields) => {
           if (!err) {
-            if (result.length > 0) {
-              outJSON.quincenas = result
-              sql = `SELECT * FROM descuentos_quincenas dq, quincenas q, empleados e WHERE q.idQuincena=dq.idQuincena ${subqueryQ} ${subqueryU} AND e.CVE_ID=dq.idEmpleado ORDER by e.CVE_ID ASC`
-              con.query(sql, (err, result, fields) => {
-                if (!err) {
-                  if (result.length > 0) {
-                    outJSON.data = result
-                  } else {
-                    outJSON.error.name = 'error01'
-                  }
-                  setResponse()
-                } else {
-                  console.log(err)
-                }
-              });
-            } else {
-              outJSON.error.name = 'error01'
+            if(result.length>0){
+              outJSON.zona = result
+              console.log(result)
+              
+            }else{
+              outJSON.error.name='error01';
             }
-          } else {
-
+            
+          }else{
+            outJSON.error.name = 'error1';
           }
+          setResponse()
         });
-
 
       }
     });
@@ -94,9 +78,9 @@ obtenerQ = () => {
           outJSON.error.name = `${e}`;
       }
 
-      if (inJSON.idUsuario !== undefined) {
+      if (inJSON.street!== undefined) {
 
-        obtenerQ()
+        saveZ()
         
       }else{
         res.end()

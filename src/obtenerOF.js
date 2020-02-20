@@ -34,38 +34,46 @@ obtenerOF = () => {
         console.log(`Error: ${err}`);
       } else {        
         let sql = `SELECT * FROM ordenesu o, padronu pa, ubiprediou u WHERE `
-        /*if (inJSON.ff === inJSON.fi){
-          sql += `o.dateUp>='${inJSON.fi}' AND o.dateUp<'${inJSON.fi}' `
-        }else{*/
-          sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
-       // }
+        
+        sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
+       
         sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
         console.log(sql)
         con.query(sql, (err, result, fields) => {
           if (!err) {
             if(result.length>0){
-              outJSON.ordenes = result
+              outJSON.ordenesu = result
               console.log(result)
-              setResponse()
-              /*sql = `SELECT * FROM descuentos_quincenas dq, quincenas q WHERE dq.idEmpleado=${inJSON.idUsuario} ${subquery} AND q.idQuincena = dq.idQuincena`
-              con.query(sql, (err, result, fields) => {
-                if (!err) {
-                  if (result.length > 0) {
-                    outJSON.data = result
-                  } else {
-                    outJSON.error.name = 'error01'
-                  }
-                  setResponse()
-                } else {
-
-                }
-              });
-              */
+              //setResponse()
+              
             }else{
               outJSON.error.name='error01';
               outJSON.ordenes = [];
-              setResponse();
-            }
+              //setResponse();
+            } 
+            sql = `SELECT * FROM ordenesr o, padronr pa, ubipredior u WHERE `
+
+            sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
+
+            sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
+            console.log(sql)
+            con.query(sql, (err, result, fields) => {
+              if (!err) {
+                if (result.length > 0) {
+                  outJSON.ordenesr = result
+                  console.log(result)
+                  //setResponse()
+
+                } else {
+                  outJSON.error.name = 'error02';
+                  outJSON.ordenes = [];
+                  //setResponse();
+                }
+                setResponse()
+              } else {
+
+              }
+            });
           }else{
 
           }

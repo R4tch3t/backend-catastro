@@ -1,6 +1,6 @@
 const http = require('http');
 const hostname = '0.0.0.0';
-const port = 3018;
+const port = 3020;
 const mysql = require('mysql');
 
 const server = http.createServer((req, res) => {
@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
         password: process.env.NODE_MYSQL_PASS,
-        database: "dbsegsistema"
+        database: "dbcatastro"
   });
 
 setResponse = () => {
@@ -25,27 +25,32 @@ setResponse = () => {
   res.end(`${outJSON}`);
 }
 
-obtenerQ = () => {
+obtenerZ = () => {
     try{
     con.connect((err) => {
       outJSON = {};
       outJSON.error = {};
       if (err) {
         console.log(`Error: ${err}`);
-      } else {
-
-        var sql = `SELECT * FROM quincenas ORDER BY idQuincena ASC`
+      } else {        
+        let sql = `SELECT * FROM zonac WHERE calle LIKE '%${inJSON.street}%' AND colonia LIKE '%${inJSON.barr}%' `
+        //sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
+        //sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
+        console.log(sql)
         con.query(sql, (err, result, fields) => {
           if (!err) {
             if(result.length>0){
-              outJSON.quincenas = result
+              outJSON.zona = result
+              console.log(result)
+              
             }else{
-              outJSON.error.name='error01'
+              outJSON.error.name='error01';
+              outJSON.ordenes = [];
             }
+            setResponse()
           }else{
 
           }
-          setResponse()
         });
 
       }
@@ -73,9 +78,9 @@ obtenerQ = () => {
           outJSON.error.name = `${e}`;
       }
 
-      if (inJSON.idUsuario !== undefined) {
+      if (inJSON.street!== undefined) {
 
-        obtenerQ()
+        obtenerZ()
         
       }else{
         res.end()
