@@ -63,7 +63,7 @@ padronU = () => {
                       if (!err) {
                         if (result.length > 0) {
                           outJSON.orden = result[0]
-                          sql = `SELECT * FROM predial${inJSON.tp} p `
+                          /*sql = `SELECT * FROM predial${inJSON.tp} p `
                           sql += `WHERE p.idOrden=${result[0].idOrden} ORDER by p.idImpuesto ASC`
                           con.query(sql, (err, result, fields) => {
                               if (!err) {
@@ -72,11 +72,13 @@ padronU = () => {
                                 }
                               }
                               setResponse()
-                          });
+                          });*/
+
                         }else{
-                          setResponse()
+                          //setResponse()
                         }
                       }
+                      setResponse()
                     });
                   } else {
                     outJSON.ubicacion = [{

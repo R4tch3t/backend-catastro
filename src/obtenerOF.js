@@ -48,8 +48,6 @@ obtenerOF = () => {
               
             }else{
               outJSON.error.name='error01';
-              outJSON.ordenes = [];
-              //setResponse();
             } 
             sql = `SELECT * FROM ordenesr o, padronr pa, ubipredior u WHERE `
 
@@ -66,13 +64,11 @@ obtenerOF = () => {
 
                 } else {
                   outJSON.error.name = 'error02';
-                  outJSON.ordenes = [];
-                  //setResponse();
                 }
-                setResponse()
+                
               } else {
-
               }
+              setResponse()
             });
           }else{
 
