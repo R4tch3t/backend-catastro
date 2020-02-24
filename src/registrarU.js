@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
         password: process.env.NODE_MYSQL_PASS,
-        database: "dbsegsistema"
+        database: "dbcatastro"
   });
 
 setResponse = () => {
@@ -33,15 +33,17 @@ registrar = () => {
       if (err) {
         console.log(`Error: ${err}`);
       } else {
+        /*
         var sql = `SELECT * FROM empleados WHERE CVE_ID=${inJSON.idUsuario}`
         con.query(sql, (err, result, fields) => {
             if (!err) {
               if(result.length>0){
-                  var sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
+                */
+                  let sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
                   con.query(sql, (err, result, fields) => {
                     if (!err) {
                       
-                      if (result[0] !== undefined && result[0].correo == inJSON.correo) {
+                      if (result[0]) {
                         outJSON.error.name = 'error01';
                         setResponse()
                       } else {
@@ -55,7 +57,7 @@ registrar = () => {
                             console.log(`Error en la consulta: ${err}`);
                           } else {
 
-                            var sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
+                            sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
                             con.query(sql, (err, result, fields) => {
                                 if (!err) {
                                   outJSON = result
@@ -69,6 +71,7 @@ registrar = () => {
                       }
                     }
                   });
+                  /*
               }else{
                 outJSON.error.name="error02"
                 setResponse()
@@ -77,7 +80,7 @@ registrar = () => {
               outJSON.error.name = "error03"
               setResponse()
             }
-        })
+        })*/
         console.log("Connected!");
 
       }

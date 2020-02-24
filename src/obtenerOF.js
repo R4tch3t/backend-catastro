@@ -37,7 +37,7 @@ obtenerOF = () => {
         
         sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
        
-        sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
+        sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA ORDER by o.dateUp ASC`
         console.log(sql)
         con.query(sql, (err, result, fields) => {
           if (!err) {
@@ -48,22 +48,27 @@ obtenerOF = () => {
               
             }else{
               outJSON.error.name='error01';
+              outJSON.ordenesu = []
             } 
             sql = `SELECT * FROM ordenesr o, padronr pa, ubipredior u WHERE `
 
             sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
 
-            sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
+            sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA ORDER by o.dateUp ASC`
             console.log(sql)
             con.query(sql, (err, result, fields) => {
               if (!err) {
                 if (result.length > 0) {
                   outJSON.ordenesr = result
+                  /*result.forEach(e => {
+                    outJSON.ordenes.push(e)
+                  })*/
                   console.log(result)
                   //setResponse()
 
                 } else {
                   outJSON.error.name = 'error02';
+                  outJSON.ordenesr = []
                 }
                 
               } else {
@@ -101,7 +106,6 @@ obtenerOF = () => {
       }
 
       if (inJSON.fi!== undefined) {
-
         obtenerOF()
         
       }else{

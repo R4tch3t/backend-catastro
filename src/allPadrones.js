@@ -1,6 +1,6 @@
 const http = require('http');
 const hostname = '0.0.0.0';
-const port = 3015;
+const port = 3023;
 const mysql = require('mysql');
 
 const server = http.createServer((req, res) => {
@@ -25,8 +25,19 @@ setResponse = () => {
   outJSON = JSON.stringify(outJSON);
   res.end(`${outJSON}`);
 }
+padronR = (subqueryB) => {
+const sql = `SELECT * FROM padronr p ${subqueryB} ORDER by p.CTA ASC`
+con.query(sql, (err, result, fields) => {
+      if (!err) {
+        if (result.length > 0) {
+          outJSON.contribuyenter = result
+        }
+      }
+      setResponse()
+})    
+}
 
-padron = () => {
+padronU = () => {
     try{
     con.connect((err) => {
       outJSON = {};
@@ -36,22 +47,25 @@ padron = () => {
       } else {
         let subqueryB = ''
         //var subqueryN = ''
-        //if (inJSON.CTAnombre!==''){
+        if (inJSON.CTAnombre !== '') {
           if (inJSON.tipoB != undefined && inJSON.tipoB === 0) {
-            subqueryB = `WHERE p.CTA=${inJSON.CTAnombre}`
+              subqueryB = `WHERE p.CTA=${inJSON.CTAnombre}`
           }
           if (inJSON.tipoB != undefined && inJSON.tipoB === 1) {
             subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%'`
           }
-        //}
-        let sql = `SELECT * FROM padron${inJSON.tp} p ${subqueryB} ORDER by p.CTA DESC`
+        }
+        let sql = `SELECT * FROM padronu p ${subqueryB} ORDER by p.CTA ASC`
+        console.log(sql)
         con.query(sql, (err, result, fields) => {
+          
           if (!err) {
             if (result.length > 0) {
               
-              outJSON.contribuyente = result
-              //setResponse()
-              sql = `SELECT * FROM ubipredio${inJSON.tp} u `
+              outJSON.contribuyenteu = result
+              
+             
+             /* sql = `SELECT * FROM ubipredio${inJSON.tp} u `
               sql += `WHERE u.CTA=${result[0].CTA} ORDER by u.CTA DESC`
               //console.log(sql)
               con.query(sql, (err, result, fields) => {
@@ -65,7 +79,7 @@ padron = () => {
                       if (!err) {
                         if (result.length > 0) {
                           outJSON.orden = result[0]
-                          /*sql = `SELECT * FROM predial${inJSON.tp} p `
+                          sql = `SELECT * FROM predial${inJSON.tp} p `
                           sql += `WHERE p.idOrden=${result[0].idOrden} ORDER by p.idImpuesto ASC`
                           con.query(sql, (err, result, fields) => {
                               if (!err) {
@@ -74,7 +88,7 @@ padron = () => {
                                 }
                               }
                               setResponse()
-                          });*/
+                          });
 
                         }else{
                           //setResponse()
@@ -92,13 +106,14 @@ padron = () => {
 
                 }
                 
-              });
+              });*/
             } else {
               outJSON.error.name = 'error01'
             }
           } else {
 
           }
+          padronR(subqueryB)
         });
 
 
@@ -126,10 +141,9 @@ padron = () => {
           console.log(`error: ${e}`);
           outJSON.error.name = `${e}`;
       }
-
-      if (inJSON.CTAnombre) {
-
-        padron()
+      
+      if (inJSON.CTAnombre!=undefined) {
+        padronU()
         
       }else{
         res.end()

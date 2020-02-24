@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
         password: process.env.NODE_MYSQL_PASS,
-        database: "dbsegsistema"
+        database: "dbcatastro"
   });
 
  // console.log(`${res.host} : ${res.statusCode}`);
@@ -33,12 +33,13 @@ registrar = () => {
       outJSON.error = {};
       if (err) {
         console.log(`Error: ${err}`);
-      } else {
+      } else {/*
         var sql = `SELECT * FROM empleados WHERE CVE_ID=${inJSON.idUsuario}`
         con.query(sql, (err, result, fields) => {
             if (!err) {
-              if(result.length>0){
-                  var sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
+              if(result.length>0){*/
+
+                  let sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
                   
                   con.query(sql, (err, result, fields) => {
                     if (!err) {
@@ -55,7 +56,7 @@ registrar = () => {
                             console.log(`Error en la consulta: ${err}`);
                           } else {
 
-                            var sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
+                            sql = `SELECT * FROM usuarios WHERE idUsuario=${inJSON.idUsuario}`
                             con.query(sql, (err, result, fields) => {
                                 if (!err) {
                                   outJSON = result
@@ -69,7 +70,8 @@ registrar = () => {
                       }
                     }
                   });
-              }else{
+
+            /*  }else{
                 outJSON.error.name="error01"
                 setResponse()
               }
@@ -77,7 +79,8 @@ registrar = () => {
               outJSON.error.name = "error01"
               setResponse()
             }
-        })
+        })*/
+
         console.log("Connected!");
 
       }
