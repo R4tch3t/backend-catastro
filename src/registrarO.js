@@ -22,9 +22,52 @@ const server = http.createServer((req, res) => {
   });
 
 setResponse = () => {
-  
   outJSON = JSON.stringify(outJSON);
   res.end(`${outJSON}`);
+}
+
+insertOrden = () => {
+    sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total) VALUES `
+    sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
+    sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
+    sql += `'${inJSON.periodo}','${inJSON.total}')`;
+    con.query(sql, (err, result, fields) => {
+      if (!err) { 
+          sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
+          con.query(sql, (err, result, fields) => {
+            let c = 0;
+            outJSON.idOrden = result[0].idOrden
+            outJSON.dateUp = result[0].dateUp
+            sql = `INSERT INTO folios(idOrden, tp) VALUES (${outJSON.idOrden},'${inJSON.tp}')`
+            con.query(sql, (err, result) => {
+              outJSON.folio = result.insertId
+              if (inJSON.idImpuestos.length === 0) {
+                outJSON.exito = 0
+                setResponse()
+              }
+              inJSON.idImpuestos.forEach(element => {
+                sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
+                sql += `(${outJSON.idOrden},'${element.id}',`
+                sql += `'${element.val}')`
+                con.query(sql, (err, result, fields) => {
+                  if (!err) {
+                    //INSERT NEW ORDEN
+                    c++;
+                    if(inJSON.idImpuestos.length===c){
+                      outJSON.exito = 0
+                      setResponse()
+                    }
+                          
+                  }
+                });
+
+              });
+
+            })
+
+          })
+      }
+  });
 }
 
 registrar = () => {
@@ -50,41 +93,8 @@ registrar = () => {
                     
                     if (!err) {
                   
-                      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total) VALUES `
-                      sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
-                      sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-                      sql += `'${inJSON.periodo}','${inJSON.total}')`;
-                      con.query(sql, (err, result, fields) => {
-                        if (!err) { 
-                            sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
-                            con.query(sql, (err, result, fields) => {
+                      insertOrden()
 
-                              let c = 0;
-                              if (inJSON.idImpuestos.length === 0) {
-                                outJSON.exito = 0
-                                setResponse()
-                              }
-                              inJSON.idImpuestos.forEach(element => {
-                                sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
-                                sql += `(${result[0].idOrden},'${element.id}',`
-                                sql += `'${element.val}')`
-                                con.query(sql, (err, result, fields) => {
-                                  if (!err) {
-                                    //INSERT NEW ORDEN
-                                    c++;
-                                    if(inJSON.idImpuestos.length===c){
-                                      outJSON.exito = 0
-                                      setResponse()
-                                    }
-                                          
-                                  }
-                                });
-
-                              });
-
-                            })
-                        }
-                    });
                     }
                   });
               }else{
@@ -93,11 +103,11 @@ registrar = () => {
                 sql += `cp='${inJSON.cp}', municipio='${inJSON.municipio}', `;
                 sql += `localidad='${inJSON.localidad}' WHERE CTA=${inJSON.CTA}`;
                 con.query(sql, (err, result, fields) => {  
-                    sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
+                    sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND dateUp='${inJSON.dateUp}' ORDER by idOrden DESC`
                     con.query(sql, (err, result, fields) => {
                       if (!err) {
                         if(result.length===0){
-                          setResponse();
+                          insertOrden()
                           /*let c = 0;
                           inJSON.idImpuestos.forEach(element => {
                             sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
@@ -118,65 +128,72 @@ registrar = () => {
 
                         }else{
                           let idOrden = result[0].idOrden
-                          sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
-                          sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}' WHERE idOrden=${idOrden}`
+                          outJSON.idOrden = idOrden
+                          outJSON.dateUp = result[0].dateUp
+                          sql = `SELECT * FROM folios WHERE idOrden=${idOrden} AND tp='${inJSON.tp}'`
                           con.query(sql, (err, result, fields) => {
-                            if (!err) {
-                              let c = 0;
-                              if (inJSON.removI.length === 0) {
-                                inJSON.removI = [{id: -1}]
-                              }
-                              inJSON.removI.forEach(e => {
-                                sql = `DELETE FROM predial${inJSON.tp} `
-                                sql += `WHERE idOrden=${idOrden} AND idImpuesto=${e.id} `
-                                con.query(sql, (err, result, fields) => {
-                                  
-                                  if (!err) {
-                                    c++;
-                                    if (inJSON.removI.length === c) {                                          
-                                      c = 0;
-                                      if (inJSON.idImpuestos.length === 0) {
-                                        outJSON.exito = 0
-                                        setResponse()
-                                      }
-                                      inJSON.idImpuestos.forEach(element => {
-                                        sql = `UPDATE predial${inJSON.tp} SET val='${element.val}' `
-                                        sql += `WHERE idOrden=${idOrden} AND idImpuesto=${element.id} `
-                                        con.query(sql, (err, result, fields) => {
-                                          if (!err) {
-                                            
-                                            if (result.affectedRows>0){
-                                              c++;
-                                              if (inJSON.idImpuestos.length === c) {
-                                                outJSON.exito = 0
-                                                setResponse()
-                                              }
-                                            }else{
-                                              sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
-                                              sql += `(${idOrden},'${element.id}',`
-                                              sql += `'${element.val}')`
-                                              con.query(sql, (err, result, fields) => {
-                                                if (!err) {
-                                                  c++;
-                                                  if (inJSON.idImpuestos.length === c) {
-                                                    outJSON.exito = 0
-                                                    setResponse()
-                                                  }
-
+                            outJSON.folio = result[0].idFolio
+                            sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
+                            sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}', periodo='${inJSON.periodo}' `
+                            sql += `WHERE idOrden=${idOrden}`
+                            con.query(sql, (err, result, fields) => {
+                              if (!err) {
+                                let c = 0;
+                                if (inJSON.removI.length === 0) {
+                                  inJSON.removI = [{id: -1}]
+                                }
+                                inJSON.removI.forEach(e => {
+                                  sql = `DELETE FROM predial${inJSON.tp} `
+                                  sql += `WHERE idOrden=${idOrden} AND idImpuesto=${e.id} `
+                                  con.query(sql, (err, result, fields) => {
+                                    
+                                    if (!err) {
+                                      c++;
+                                      if (inJSON.removI.length === c) {                                          
+                                        c = 0;
+                                        if (inJSON.idImpuestos.length === 0) {
+                                          outJSON.exito = 0
+                                          setResponse()
+                                        }
+                                        inJSON.idImpuestos.forEach(element => {
+                                          sql = `UPDATE predial${inJSON.tp} SET val='${element.val}' `
+                                          sql += `WHERE idOrden=${idOrden} AND idImpuesto=${element.id} `
+                                          con.query(sql, (err, result, fields) => {
+                                            if (!err) {
+                                              
+                                              if (result.affectedRows>0){
+                                                c++;
+                                                if (inJSON.idImpuestos.length === c) {
+                                                  outJSON.exito = 0
+                                                  setResponse()
                                                 }
-                                              });
-                                            }
-                                          }
-                                        });
-                                      });
-                                    } 
-                                    }
-                                });
-                              });      
-                            }
+                                              }else{
+                                                sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
+                                                sql += `(${idOrden},'${element.id}',`
+                                                sql += `'${element.val}')`
+                                                con.query(sql, (err, result, fields) => {
+                                                  if (!err) {
+                                                    c++;
+                                                    if (inJSON.idImpuestos.length === c) {
+                                                      outJSON.exito = 0
+                                                      setResponse()
+                                                    }
 
-                            });
-                            
+                                                  }
+                                                });
+                                              }
+                                            }
+                                          });
+                                        });
+                                      } 
+                                      }
+                                  });
+                                });      
+                              }
+
+                              });
+
+                            })
                         }
                         
                       }
