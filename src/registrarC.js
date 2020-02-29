@@ -44,13 +44,16 @@ registrar = () => {
                 con.query(sql, (err, result, fields) => {
                   if (!err) {
                     outJSON.contribuyente = result
-                    /*if(result){
-                      if (result.affectedRows===1){
-                        outJSON.contribuyente = ""
-                      }
-                    }*/
+                    sql = `INSERT INTO ubipredio${inJSON.tp}(CTA, calle, numero, colonia, cp, municipio, localidad) `
+                    sql += `VALUES (${inJSON.CTA},'${inJSON.calle}',${inJSON.numCalle},'${inJSON.colonia}', `
+                    sql += `${inJSON.cp}, '${inJSON.municipio}', '${inJSON.localidad}')`
+                    con.query(sql, (err, result, fields) => {
+                          if (!err) {
+                            setResponse()
+                          }
+                    })
                   }
-                  setResponse()
+                  
                 });
               }else{
                 outJSON.error.name = "error01"

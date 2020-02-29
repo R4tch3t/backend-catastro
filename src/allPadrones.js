@@ -56,7 +56,7 @@ padronU = () => {
           }
         }
         let sql = `SELECT * FROM padronu p ${subqueryB} ORDER by p.CTA ASC`
-        console.log(sql)
+        
         con.query(sql, (err, result, fields) => {
           
           if (!err) {

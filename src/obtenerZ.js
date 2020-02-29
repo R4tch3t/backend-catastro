@@ -36,12 +36,10 @@ obtenerZ = () => {
         let sql = `SELECT * FROM zonac WHERE calle LIKE '%${inJSON.street}%' AND colonia LIKE '%${inJSON.barr}%' `
         //sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
         //sql += `AND pa.CTA=o.CTA AND u.CTA=o.CTA`
-        console.log(sql)
         con.query(sql, (err, result, fields) => {
           if (!err) {
             if(result.length>0){
               outJSON.zona = result
-              console.log(result)
               
             }else{
               outJSON.error.name='error01';
