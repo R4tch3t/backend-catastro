@@ -92,7 +92,7 @@ padron = () => {
                     });
                   } else {
                     outJSON.ubicacion = [{
-                      calle: '', numero: 0, colonia: '', cp: 0, municipio: '', localidad: '', basegrav: 0
+                      calle: '', lote: 0, manzana:'', numero: 0, colonia: '', cp: 0, municipio: '', localidad: '', basegrav: 0
                     }]
                     setResponse()
                   }

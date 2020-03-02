@@ -44,9 +44,10 @@ registrar = () => {
                 con.query(sql, (err, result, fields) => {
                   if (!err) {
                     outJSON.contribuyente = result
-                    sql = `INSERT INTO ubipredio${inJSON.tp}(CTA, calle, numero, colonia, cp, municipio, localidad) `
-                    sql += `VALUES (${inJSON.CTA},'${inJSON.calle}',${inJSON.numCalle},'${inJSON.colonia}', `
-                    sql += `${inJSON.cp}, '${inJSON.municipio}', '${inJSON.localidad}')`
+                    sql = `INSERT INTO ubipredio${inJSON.tp}(CTA, calle, lote, manzana, numero, colonia, cp, municipio, localidad) `
+                    sql += `VALUES (${inJSON.CTA},'${inJSON.calle}','${inJSON.lote}','${inJSON.manzana}', `
+                    sql += `'${inJSON.numCalle}','${inJSON.colonia}','${inJSON.cp}', '${inJSON.municipio}', '${inJSON.localidad}')`
+                    
                     con.query(sql, (err, result, fields) => {
                           if (!err) {
                             setResponse()

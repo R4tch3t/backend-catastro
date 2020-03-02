@@ -83,9 +83,9 @@ registrar = () => {
 
             if (!err) {
               if(result.length===0){
-                  sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,numero,colonia,cp,municipio,localidad) VALUES `
-                  sql += `(${inJSON.CTA},'${inJSON.calle}',`
-                  sql += `'${inJSON.numero}','${inJSON.colonia}',`
+                  sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,lote,manzana,numero,colonia,cp,municipio,localidad) VALUES `
+                  sql += `(${inJSON.CTA},'${inJSON.calle}','${inJSON.lote}',`
+                  sql += `'${inJSON.manzana}','${inJSON.numero}','${inJSON.colonia}',`
                   sql += `'${inJSON.cp}','${inJSON.municipio}',`;
                   sql += `'${inJSON.localidad}')`;
                   console.log(sql)
@@ -98,8 +98,8 @@ registrar = () => {
                     }
                   });
               }else{
-                sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', `
-                sql += `numero='${inJSON.numero}', colonia='${inJSON.colonia}', `
+                sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', lote='${inJSON.lote}', `
+                sql += `manzana='${inJSON.manzana}', numero='${inJSON.numero}', colonia='${inJSON.colonia}', `
                 sql += `cp='${inJSON.cp}', municipio='${inJSON.municipio}', `;
                 sql += `localidad='${inJSON.localidad}' WHERE CTA=${inJSON.CTA}`;
                 con.query(sql, (err, result, fields) => {  
