@@ -27,10 +27,10 @@ setResponse = () => {
 }
 
 insertOrden = () => {
-    sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total) VALUES `
+    sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado) VALUES `
     sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
     sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-    sql += `'${inJSON.periodo}','${inJSON.total}')`;
+    sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}')`;
     con.query(sql, (err, result, fields) => {
       if (!err) { 
           sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
