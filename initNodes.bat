@@ -15,3 +15,4 @@ start /min cmd /c forever start -c node .\src\registrarO.js
 start /min cmd /c forever start -c node .\src\registrarU.js
 start /min cmd /c forever start -c node .\src\saveDataL.js
 start /min cmd /c forever start -c node .\src\informeM.js
+start /min cmd /c forever start -c node .\src\actualizarC.js

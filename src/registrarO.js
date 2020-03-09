@@ -88,7 +88,7 @@ registrar = () => {
                   sql += `'${inJSON.manzana}','${inJSON.numero}','${inJSON.colonia}',`
                   sql += `'${inJSON.cp}','${inJSON.municipio}',`;
                   sql += `'${inJSON.localidad}')`;
-                  console.log(sql)
+                  
                   con.query(sql, (err, result, fields) => {
                     
                     if (!err) {
