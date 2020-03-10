@@ -103,6 +103,7 @@ padron = () => {
               });
             } else {
               outJSON.error.name = 'error01'
+              setResponse()
             }
           } else {
 

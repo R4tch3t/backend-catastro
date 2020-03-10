@@ -34,42 +34,36 @@ actualizar = () => {
       if (err) {
         console.log(`Error: ${err}`);
       } else {
-        let sql = `UPDATE padron${inJSON.tp} SET contribuyente=${inJSON.nombre} WHERE CTA=${inJSON.CTA}`
+        let sql = `SELECT * FROM padron${inJSON.tp} WHERE CTA=${inJSON.CTA}`
         con.query(sql, (err, result, fields) => {
+          if (result.length !== 0) {
+          sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}' WHERE CTA=${inJSON.CTA}`
+          con.query(sql, (err, result, fields) => {
 
-            if (!err) {
-              if(result.length!==0){
-                /*
-                sql = `INSERT INTO padron${inJSON.tp}(CTA, contribuyente, ubicacion, basegrav, observaciones) `
-                sql += `VALUES (${inJSON.CTA},'${inJSON.nombre}','',0,'')`
+              if (!err) {
+                outJSON.contribuyente = result
+                sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', `
+                sql += `lote='${inJSON.lote}', manzana='${inJSON.manzana}', numero='${inJSON.numCalle}', `
+                sql += `colonia='${inJSON.colonia}', cp='${inJSON.cp}', municipio='${inJSON.municipio}', `
+                sql += `localidad='${inJSON.localidad}' `
+                sql += `WHERE CTA=${inJSON.CTA}`
                 con.query(sql, (err, result, fields) => {
-                  if (!err) {
-                    outJSON.contribuyente = result
-                    sql = `INSERT INTO ubipredio${inJSON.tp}(CTA, calle, lote, manzana, numero, colonia, cp, municipio, localidad) `
-                    sql += `VALUES (${inJSON.CTA},'${inJSON.calle}','${inJSON.lote}','${inJSON.manzana}', `
-                    sql += `'${inJSON.numCalle}','${inJSON.colonia}','${inJSON.cp}', '${inJSON.municipio}', '${inJSON.localidad}')`
-                    
-                    con.query(sql, (err, result, fields) => {
-                          if (!err) {
-                            setResponse()
-                          }
-                    })
-                  }
-                  
-                });*/
+                 outJSON.ubipredio = result
+                 setResponse()
+                })
+                 
               }else{
-                outJSON.error.name = "error01"
-                
+                outJSON.error.name = "error03"
+                //setResponse()
               }
 
-            }else{
-              outJSON.error.name = "error03"
-              //setResponse()
-            }
-            setResponse()
-
+          })
+        } else {
+          outJSON.error.name = "error01"
+          setResponse()
+        }
+          console.log("Connected!");
         })
-        console.log("Connected!");
 
       }
     });

@@ -1,6 +1,6 @@
 const http = require('http');
 const hostname = '0.0.0.0';
-const port = 3016;
+const port = 3027;
 const mysql = require('mysql');
 //const Pdf = require('../renderPDF');
 
@@ -26,14 +26,13 @@ setResponse = () => {
   res.end(`${outJSON}`);
 }
 
-insertOrden = () => {
-    sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado) VALUES `
-    sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
-    sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-    sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}')`;
+insertForma = () => {
+    sql = `INSERT INTO ordenes (nombre,tp,total,idEmpleado) VALUES `
+    sql += `('${inJSON.nombre}', '${inJSON.tp}',`
+    sql += `'${inJSON.total}','${inJSON.idEmpleado}')`
     con.query(sql, (err, result, fields) => {
       if (!err) { 
-          sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
+          sql = `SELECT * FROM ordenes WHERE nombre='${inJSON.nombre}' AND tp='${inJSON.tp}' ORDER by idOrden DESC`
           con.query(sql, (err, result, fields) => {
             let c = 0;
             outJSON.idOrden = result[0].idOrden
@@ -46,7 +45,7 @@ insertOrden = () => {
                 setResponse()
               }
               inJSON.idImpuestos.forEach(element => {
-                sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
+                sql = `INSERT INTO formas (idOrden,idImpuesto,val) VALUES `
                 sql += `(${outJSON.idOrden},'${element.id}',`
                 sql += `'${element.val}')`
                 con.query(sql, (err, result, fields) => {
@@ -79,7 +78,8 @@ registrar = () => {
         console.log(`Error: ${err}`);
       } else {
         let sql = `SELECT * FROM ubipredio${inJSON.tp} WHERE CTA=${inJSON.CTA}`
-        con.query(sql, (err, result, fields) => {
+        insertForma()
+       /* con.query(sql, (err, result, fields) => {
 
             if (!err) {
               if(result.length===0){
@@ -93,10 +93,11 @@ registrar = () => {
                     
                     if (!err) {
                   
-                      insertOrden()
+                      insertForma()
 
                     }
                   });
+                  
               }else{
                 sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', lote='${inJSON.lote}', `
                 sql += `manzana='${inJSON.manzana}', numero='${inJSON.numero}', colonia='${inJSON.colonia}', `
@@ -107,24 +108,7 @@ registrar = () => {
                     con.query(sql, (err, result, fields) => {
                       if (!err) {
                         if(result.length===0){
-                          insertOrden()
-                          /*let c = 0;
-                          inJSON.idImpuestos.forEach(element => {
-                            sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
-                            sql += `(${result[0].idOrden},'${element.id}',`
-                            sql += `'${element.val}')`
-                            con.query(sql, (err, result, fields) => {
-                              if (!err) {
-                                //INSERT NEW ORDEN
-                                c++;
-                                if (inJSON.idImpuestos.length === c) {
-                                  outJSON.exito = 0
-                                  setResponse()
-                                }
-
-                              }
-                            });
-                          });*/ 
+                          insertForma()
 
                         }else{
                           let idOrden = result[0].idOrden
@@ -206,7 +190,8 @@ registrar = () => {
               setResponse()
             }
 
-        })
+        })*/
+
         console.log("Connected!");
 
       }
@@ -233,8 +218,10 @@ registrar = () => {
           outJSON.error.name = `${e}`;
       }
 
-      if (inJSON.CTA !== undefined) {
+      if (inJSON.nombre !== undefined) {
+        
           registrar()
+        
         
       }else{
         res.end()
