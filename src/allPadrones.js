@@ -1,5 +1,6 @@
 const http = require('http');
 const hostname = '0.0.0.0';
+//const hostname = '';
 const port = 3023;
 const mysql = require('mysql');
 
@@ -14,16 +15,19 @@ const server = http.createServer((req, res) => {
   let outJSON = {};
   outJSON.error = {};
   let con = mysql.createConnection({
-        host: "localhost",
-        user: process.env.NODE_MYSQL_USER,
-        password: process.env.NODE_MYSQL_PASS,
-        database: "dbcatastro"
+    host: "localhost",
+    user: process.env.NODE_MYSQL_USER,
+    password: process.env.NODE_MYSQL_PASS,
+    database: "dbcatastro"
   });
 
  // console.log(`${res.host} : ${res.statusCode}`);
 setResponse = () => {
   outJSON = JSON.stringify(outJSON);
   res.end(`${outJSON}`);
+  con.destroy();
+  server.close();
+  server.listen(port, hostname);
 }
 padronR = (subqueryB) => {
 const sql = `SELECT * FROM padronr p ${subqueryB} ORDER by p.CTA ASC`
@@ -43,7 +47,8 @@ padronU = () => {
       outJSON = {};
       outJSON.error = {};
       if (err) {
-        console.log(`Error: ${err}`);
+        console.log(`Err on con: ${err}`);
+        
       } else {
         let subqueryB = ''
         //var subqueryN = ''
@@ -138,8 +143,10 @@ padronU = () => {
       outJSON.error.name2='none';
     
       } catch (e) {
-          console.log(`error: ${e}`);
-          outJSON.error.name = `${e}`;
+       // console.clear()
+        console.log(`error on end: ${e}`);
+        outJSON.error.name = `${e}`;
+          
       }
       
       if (inJSON.CTAnombre!=undefined) {

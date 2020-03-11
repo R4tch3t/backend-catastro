@@ -24,6 +24,9 @@ setResponse = () => {
   outJSON.exito = 1
   outJSON = JSON.stringify(outJSON);
   res.end(`${outJSON}`);
+  con.destroy();
+  server.close();
+  server.listen(port, hostname);
 }
 insertPT = () =>{
   let i = 0
@@ -159,6 +162,7 @@ saveData = () => {
       outJSON.error.name2='none';
     
       } catch (e) {
+          //console.clear()
           console.log(`error: ${e}`);
           outJSON.error.name = `${e}`;
       }

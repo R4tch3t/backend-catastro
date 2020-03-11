@@ -23,6 +23,9 @@ const server = http.createServer((req, res) => {
 setResponse = () => {
   outJSON = JSON.stringify(outJSON);
   res.end(`${outJSON}`);
+  con.destroy();
+  server.close();
+  server.listen(port, hostname);
 }
 
 getInfo = () => {
@@ -65,6 +68,7 @@ getInfo = () => {
       outJSON.error.name2='none';
     
       } catch (e) {
+         // console.clear()
           console.log(`error: ${e}`);
           outJSON.error.name = `${e}`;
       }
