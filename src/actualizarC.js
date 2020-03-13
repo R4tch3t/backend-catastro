@@ -55,7 +55,7 @@ actualizar = () => {
                     
                     sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,lote,manzana,numero,colonia,cp,municipio,localidad) VALUES `
                     sql += `(${inJSON.CTA},'${inJSON.calle}','${inJSON.lote}',`
-                    sql += `'${inJSON.manzana}','${inJSON.numero}','${inJSON.colonia}',`
+                    sql += `'${inJSON.manzana}','${inJSON.numCalle}','${inJSON.colonia}',`
                     sql += `'${inJSON.cp}','${inJSON.municipio}',`;
                     sql += `'${inJSON.localidad}')`;
 
