@@ -40,7 +40,7 @@ actualizar = () => {
         let sql = `SELECT * FROM padron${inJSON.tp} WHERE CTA=${inJSON.CTA}`
         con.query(sql, (err, result, fields) => {
           if (result.length !== 0) {
-          sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}' WHERE CTA=${inJSON.CTA}`
+          sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}', ubicacion='${inJSON.calle}' WHERE CTA=${inJSON.CTA}`
           con.query(sql, (err, result, fields) => {
 
               if (!err) {
@@ -51,8 +51,24 @@ actualizar = () => {
                 sql += `localidad='${inJSON.localidad}' `
                 sql += `WHERE CTA=${inJSON.CTA}`
                 con.query(sql, (err, result, fields) => {
-                 outJSON.ubipredio = result
-                 setResponse()
+                  if (result.affectedRows===0){
+                    
+                    sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,lote,manzana,numero,colonia,cp,municipio,localidad) VALUES `
+                    sql += `(${inJSON.CTA},'${inJSON.calle}','${inJSON.lote}',`
+                    sql += `'${inJSON.manzana}','${inJSON.numero}','${inJSON.colonia}',`
+                    sql += `'${inJSON.cp}','${inJSON.municipio}',`;
+                    sql += `'${inJSON.localidad}')`;
+
+                    con.query(sql, (err, result, fields) => {
+                      
+                      outJSON.ubipredio = result
+                      setResponse()
+                      
+                    });
+                  }else{
+                    outJSON.ubipredio = result
+                    setResponse()
+                  }
                 })
                  
               }else{
