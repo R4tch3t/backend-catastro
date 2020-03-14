@@ -49,9 +49,9 @@ padron = () => {
             subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%'`
           }
 
-          if (inJSON.dateUp != undefined && inJSON.dateUp !== '') {
+          if (inJSON.idOrden != undefined && inJSON.idOrden !== '') {
          
-            subqueryC = `AND o.dateUp='${inJSON.dateUp}'`
+            subqueryC = `AND o.idOrden=${inJSON.idOrden}`
           }
 
         //}
@@ -73,6 +73,7 @@ padron = () => {
 
                     sql = `SELECT * FROM ordenes${inJSON.tp} o `
                     sql += `WHERE o.CTA=${result[0].CTA} ${subqueryC} ORDER by o.idOrden DESC`
+                    console.log(sql)
                     con.query(sql, (err, result, fields) => {
                       if (!err) {
                         if (result.length > 0) {

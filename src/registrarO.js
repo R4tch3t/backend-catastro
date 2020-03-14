@@ -30,10 +30,18 @@ setResponse = () => {
 }
 
 insertOrden = () => {
-    sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado) VALUES `
-    sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
-    sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-    sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}')`;
+    
+    if (inJSON.dateUp===''){
+      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado) VALUES `
+      sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
+      sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
+      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}')`;
+    }else{
+      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,dateUp) VALUES `
+      sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
+      sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
+      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.dateUp}')`;
+    }
     con.query(sql, (err, result, fields) => {
       if (!err) { 
           sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND periodo='${inJSON.periodo}' ORDER by idOrden DESC`
@@ -106,7 +114,8 @@ registrar = () => {
                 sql += `cp='${inJSON.cp}', municipio='${inJSON.municipio}', `;
                 sql += `localidad='${inJSON.localidad}' WHERE CTA=${inJSON.CTA}`;
                 con.query(sql, (err, result, fields) => {  
-                    sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND dateUp='${inJSON.dateUp}' ORDER by idOrden DESC`
+                    sql = `SELECT * FROM ordenes${inJSON.tp} WHERE idOrden=${inJSON.idOrden} ORDER by idOrden DESC`
+                    
                     con.query(sql, (err, result, fields) => {
                       if (!err) {
                         if(result.length===0){
@@ -132,13 +141,14 @@ registrar = () => {
                         }else{
                           let idOrden = result[0].idOrden
                           outJSON.idOrden = idOrden
-                          outJSON.dateUp = result[0].dateUp
+                          outJSON.dateUp = inJSON.dateUp
                           sql = `SELECT * FROM folios WHERE idOrden=${idOrden} AND tp='${inJSON.tp}'`
                           con.query(sql, (err, result, fields) => {
                             outJSON.folio = result[0].idFolio
                             sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
-                            sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}', periodo='${inJSON.periodo}' `
-                            sql += `WHERE idOrden=${idOrden}`
+                            sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}', periodo='${inJSON.periodo}', `
+                            sql += `dateUp='${inJSON.dateUp}' WHERE idOrden=${idOrden}`
+                          
                             con.query(sql, (err, result, fields) => {
                               if (!err) {
                                 let c = 0;
@@ -199,7 +209,7 @@ registrar = () => {
                             })
                         }
                         
-                      }
+                      } 
                     });
                 });
               }
