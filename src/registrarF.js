@@ -83,7 +83,7 @@ registrar = () => {
       } else {
         let sql = `SELECT * FROM ordenes WHERE idOrden=${inJSON.idOrden} ORDER by idOrden DESC`
         con.query(sql, (err, result, fields) => {
-          if(result===0){
+          if(result.length===0){
             insertForma()
           }else{
             console.log(result)
