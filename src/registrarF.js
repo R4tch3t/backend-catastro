@@ -86,7 +86,6 @@ registrar = () => {
           if(result.length===0){
             insertForma()
           }else{
-            console.log(result)
             sql = `UPDATE ordenes SET nombre='${inJSON.nombre}',total='${inJSON.total}',dateUp='${inJSON.dateUp}' `
             sql += `WHERE idOrden=${inJSON.idOrden} `
             con.query(sql, (err, result, fields) => {
