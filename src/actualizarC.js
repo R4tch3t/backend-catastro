@@ -40,7 +40,8 @@ actualizar = () => {
         let sql = `SELECT * FROM padron${inJSON.tp} WHERE CTA=${inJSON.CTA}`
         con.query(sql, (err, result, fields) => {
           if (result.length !== 0) {
-          sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}', ubicacion='${inJSON.calle}' WHERE CTA=${inJSON.CTA}`
+          sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}', ubicacion='${inJSON.calle}', `
+          sql += `periodo='${inJSON.periodo}' WHERE CTA=${inJSON.CTA}`
           con.query(sql, (err, result, fields) => {
 
               if (!err) {

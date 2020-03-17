@@ -73,7 +73,6 @@ padron = () => {
 
                     sql = `SELECT * FROM ordenes${inJSON.tp} o `
                     sql += `WHERE o.CTA=${result[0].CTA} ${subqueryC} ORDER by o.idOrden DESC`
-                    console.log(sql)
                     con.query(sql, (err, result, fields) => {
                       if (!err) {
                         if (result.length > 0) {

@@ -17,3 +17,4 @@ start /min cmd /c forever start -c node .\src\saveDataL.js
 start /min cmd /c forever start -c node .\src\informeM.js
 start /min cmd /c forever start -c node .\src\actualizarC.js
 start /min cmd /c forever start -c node .\src\registrarF.js
+start /min cmd /c forever start -c node .\src\folios.js

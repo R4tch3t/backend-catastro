@@ -35,7 +35,8 @@ insertForma = () => {
     sql += `'${inJSON.total}','${inJSON.idEmpleado}')`
     con.query(sql, (err, result, fields) => {
       if (!err) { 
-          sql = `SELECT * FROM ordenes WHERE nombre='${inJSON.nombre}' AND tp='${inJSON.tp}' ORDER by idOrden DESC`
+          const idOrden = result.insertId
+          sql = `SELECT * FROM ordenes WHERE idOrden=${idOrden} ORDER by idOrden DESC`
           con.query(sql, (err, result, fields) => {
             let c = 0;
             outJSON.idOrden = result[0].idOrden
@@ -80,120 +81,48 @@ registrar = () => {
       if (err) {
         console.log(`Error: ${err}`);
       } else {
-        let sql = `SELECT * FROM ubipredio${inJSON.tp} WHERE CTA=${inJSON.CTA}`
-        insertForma()
-       /* con.query(sql, (err, result, fields) => {
-
-            if (!err) {
-              if(result.length===0){
-                  sql = `INSERT INTO ubipredio${inJSON.tp} (CTA,calle,lote,manzana,numero,colonia,cp,municipio,localidad) VALUES `
-                  sql += `(${inJSON.CTA},'${inJSON.calle}','${inJSON.lote}',`
-                  sql += `'${inJSON.manzana}','${inJSON.numero}','${inJSON.colonia}',`
-                  sql += `'${inJSON.cp}','${inJSON.municipio}',`;
-                  sql += `'${inJSON.localidad}')`;
-                  
-                  con.query(sql, (err, result, fields) => {
-                    
-                    if (!err) {
-                  
-                      insertForma()
-
-                    }
-                  });
-                  
-              }else{
-                sql = `UPDATE ubipredio${inJSON.tp} SET calle='${inJSON.calle}', lote='${inJSON.lote}', `
-                sql += `manzana='${inJSON.manzana}', numero='${inJSON.numero}', colonia='${inJSON.colonia}', `
-                sql += `cp='${inJSON.cp}', municipio='${inJSON.municipio}', `;
-                sql += `localidad='${inJSON.localidad}' WHERE CTA=${inJSON.CTA}`;
-                con.query(sql, (err, result, fields) => {  
-                    sql = `SELECT * FROM ordenes${inJSON.tp} WHERE CTA=${inJSON.CTA} AND dateUp='${inJSON.dateUp}' ORDER by idOrden DESC`
-                    con.query(sql, (err, result, fields) => {
-                      if (!err) {
-                        if(result.length===0){
-                          insertForma()
-
-                        }else{
-                          let idOrden = result[0].idOrden
-                          outJSON.idOrden = idOrden
-                          outJSON.dateUp = result[0].dateUp
-                          sql = `SELECT * FROM folios WHERE idOrden=${idOrden} AND tp='${inJSON.tp}'`
-                          con.query(sql, (err, result, fields) => {
-                            outJSON.folio = result[0].idFolio
-                            sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
-                            sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}', periodo='${inJSON.periodo}' `
-                            sql += `WHERE idOrden=${idOrden}`
-                            con.query(sql, (err, result, fields) => {
-                              if (!err) {
-                                let c = 0;
-                                if (inJSON.removI.length === 0) {
-                                  inJSON.removI = [{id: -1}]
-                                }
-                                inJSON.removI.forEach(e => {
-                                  sql = `DELETE FROM predial${inJSON.tp} `
-                                  sql += `WHERE idOrden=${idOrden} AND idImpuesto=${e.id} `
-                                  con.query(sql, (err, result, fields) => {
-                                    
-                                    if (!err) {
-                                      c++;
-                                      if (inJSON.removI.length === c) {                                          
-                                        c = 0;
-                                        if (inJSON.idImpuestos.length === 0) {
-                                          outJSON.exito = 0
-                                          setResponse()
-                                        }
-                                        inJSON.idImpuestos.forEach(element => {
-                                          sql = `UPDATE predial${inJSON.tp} SET val='${element.val}' `
-                                          sql += `WHERE idOrden=${idOrden} AND idImpuesto=${element.id} `
-                                          con.query(sql, (err, result, fields) => {
-                                            if (!err) {
-                                              
-                                              if (result.affectedRows>0){
-                                                c++;
-                                                if (inJSON.idImpuestos.length === c) {
-                                                  outJSON.exito = 0
-                                                  setResponse()
-                                                }
-                                              }else{
-                                                sql = `INSERT INTO predial${inJSON.tp} (idOrden,idImpuesto,val) VALUES `
-                                                sql += `(${idOrden},'${element.id}',`
-                                                sql += `'${element.val}')`
-                                                con.query(sql, (err, result, fields) => {
-                                                  if (!err) {
-                                                    c++;
-                                                    if (inJSON.idImpuestos.length === c) {
-                                                      outJSON.exito = 0
-                                                      setResponse()
-                                                    }
-
-                                                  }
-                                                });
-                                              }
-                                            }
-                                          });
-                                        });
-                                      } 
-                                      }
-                                  });
-                                });      
-                              }
-
-                              });
-
-                            })
-                        }
-                        
-                      }
-                    });
-                });
+        let sql = `SELECT * FROM ordenes WHERE idOrden=${inJSON.idOrden} ORDER by idOrden DESC`
+        con.query(sql, (err, result, fields) => {
+          if(result===0){
+            insertForma()
+          }else{
+            console.log(result)
+            sql = `UPDATE ordenes SET nombre='${inJSON.nombre}',total='${inJSON.total}',dateUp='${inJSON.dateUp}' `
+            sql += `WHERE idOrden=${inJSON.idOrden} `
+            con.query(sql, (err, result, fields) => {
+              let c = 0;
+              if (inJSON.idImpuestos.length === 0) {
+                outJSON.exito = 0
+                setResponse()
               }
+              inJSON.idImpuestos.forEach(element => {
+                sql = `UPDATE formas SET val='${element.val}' WHERE `
+                sql += `idOrden=${inJSON.idOrden} AND idImpuesto='${element.id}'`
+                con.query(sql, (err, result, fields) => {
+                  if (!err) {
+                    //INSERT NEW ORDEN
+                    c++;
+                    if(inJSON.idImpuestos.length===c){
+                      outJSON.idOrden = inJSON.idOrden
+                      outJSON.dateUp = inJSON.dateUp
+                      sql = `SELECT * FROM folios WHERE idOrden=${inJSON.idOrden} AND tp='f'`
+                      con.query(sql, (err, result, fields) => {
+                      if(result.length>0){
+                        outJSON.folio = result[0].idFolio
+                      }
+                      outJSON.exito = 0
+                      setResponse()
+                      })
+                    }
+                          
+                  }
+                });
 
-            }else{
-              outJSON.error.name = "error03"
-              setResponse()
-            }
-
-        })*/
+              });
+            })
+          }
+        })
+       
 
         console.log("Connected!");
 
