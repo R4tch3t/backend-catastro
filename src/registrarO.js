@@ -32,12 +32,12 @@ setResponse = () => {
 insertOrden = () => {
     
     if (inJSON.dateUp===''){
-      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado) VALUES `
+      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,otroservicio) VALUES `
       sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
       sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
       sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}')`;
     }else{
-      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,dateUp) VALUES `
+      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,otroservicio,dateUp) VALUES `
       sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
       sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
       sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}','${inJSON.dateUp}')`;
