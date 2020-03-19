@@ -35,12 +35,12 @@ insertOrden = () => {
       sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado) VALUES `
       sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
       sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}')`;
+      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}')`;
     }else{
       sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,dateUp) VALUES `
       sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
       sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.dateUp}')`;
+      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}','${inJSON.dateUp}')`;
     }
     con.query(sql, (err, result, fields) => {
       if (!err) { 
@@ -147,7 +147,7 @@ registrar = () => {
                             outJSON.folio = result[0].idFolio
                             sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
                             sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}', periodo='${inJSON.periodo}', `
-                            sql += `dateUp='${inJSON.dateUp}' WHERE idOrden=${idOrden}`
+                            sql += `otroservicio='${inJSON.otroservicio}', dateUp='${inJSON.dateUp}' WHERE idOrden=${idOrden}`
                           
                             con.query(sql, (err, result, fields) => {
                               if (!err) {
