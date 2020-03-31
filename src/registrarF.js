@@ -122,13 +122,11 @@ registrar = () => {
                       sql += `WHERE idOrden=${inJSON.idOrden} AND idImpuesto=${element.id} `
                       con.query(sql, (err, result, fields) => {
                         if(result.length===0){
-
                           sql = `INSERT INTO formas (idOrden,idImpuesto,val) VALUES `
                           sql += `(${inJSON.idOrden},'${element.id}',`
                           sql += `'${element.val}')`
                           con.query(sql, (err, result, fields) => {
                             if (!err) {
-                              //INSERT NEW ORDEN
                               c++;
                               if (inJSON.idImpuestos.length === c) {
                                 outFolio()
