@@ -90,34 +90,48 @@ registrar = () => {
             sql += `WHERE idOrden=${inJSON.idOrden} `
             con.query(sql, (err, result, fields) => {
               let c = 0;
-              if (inJSON.idImpuestos.length === 0) {
-                outJSON.exito = 0
-                setResponse()
+              if (inJSON.removI.length === 0) {
+                  inJSON.removI = [{id: -1}]
               }
-              inJSON.idImpuestos.forEach(element => {
-                sql = `UPDATE formas SET val='${element.val}' WHERE `
-                sql += `idOrden=${inJSON.idOrden} AND idImpuesto='${element.id}'`
+              inJSON.removI.forEach(e => {
+                sql = `DELETE FROM formas `
+                sql += `WHERE idOrden=${inJSON.idOrden} AND idImpuesto=${e.id} `
                 con.query(sql, (err, result, fields) => {
-                  if (!err) {
-                    //INSERT NEW ORDEN
-                    c++;
-                    if(inJSON.idImpuestos.length===c){
-                      outJSON.idOrden = inJSON.idOrden
-                      outJSON.dateUp = inJSON.dateUp
-                      sql = `SELECT * FROM folios WHERE idOrden=${inJSON.idOrden} AND tp='f'`
-                      con.query(sql, (err, result, fields) => {
-                      if(result.length>0){
-                        outJSON.folio = result[0].idFolio
-                      }
+                  c++
+                  if (inJSON.removI.length === c) {
+                    let c = 0;
+                    if (inJSON.idImpuestos.length === 0) {
                       outJSON.exito = 0
                       setResponse()
-                      })
                     }
-                          
-                  }
-                });
+                    inJSON.idImpuestos.forEach(element => {
+                      sql = `UPDATE formas SET val='${element.val}' WHERE `
+                      sql += `idOrden=${inJSON.idOrden} AND idImpuesto='${element.id}'`
+                      con.query(sql, (err, result, fields) => {
+                        if (!err) {
+                          //INSERT NEW ORDEN
+                          c++;
+                          if(inJSON.idImpuestos.length===c){
+                            outJSON.idOrden = inJSON.idOrden
+                            outJSON.dateUp = inJSON.dateUp
+                            sql = `SELECT * FROM folios WHERE idOrden=${inJSON.idOrden} AND tp='f'`
+                            con.query(sql, (err, result, fields) => {
+                            if(result.length>0){
+                              outJSON.folio = result[0].idFolio
+                            }
+                            outJSON.exito = 0
+                            setResponse()
+                            })
+                          }
+                                
+                        }
+                      });
 
-              });
+                    });
+
+                  }
+                })
+              })
             })
           }
         })
