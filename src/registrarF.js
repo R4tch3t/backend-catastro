@@ -73,6 +73,19 @@ insertForma = () => {
   });
 }
 
+outFolio=()=>{
+outJSON.idOrden = inJSON.idOrden
+outJSON.dateUp = inJSON.dateUp
+sql = `SELECT * FROM folios WHERE idOrden=${inJSON.idOrden} AND tp='f'`
+con.query(sql, (err, result, fields) => {
+  if (result.length > 0) {
+    outJSON.folio = result[0].idFolio
+  }
+  outJSON.exito = 0
+  setResponse()
+})
+}
+
 registrar = () => {
   try{
     con.connect((err) => {
@@ -82,6 +95,7 @@ registrar = () => {
         console.log(`Error: ${err}`);
       } else {
         let sql = `SELECT * FROM ordenes WHERE idOrden=${inJSON.idOrden} ORDER by idOrden DESC`
+        
         con.query(sql, (err, result, fields) => {
           if(result.length===0){
             insertForma()
@@ -101,31 +115,47 @@ registrar = () => {
                   if (inJSON.removI.length === c) {
                     let c = 0;
                     if (inJSON.idImpuestos.length === 0) {
-                      outJSON.exito = 0
-                      setResponse()
+                      outFolio()
                     }
                     inJSON.idImpuestos.forEach(element => {
-                      sql = `UPDATE formas SET val='${element.val}' WHERE `
-                      sql += `idOrden=${inJSON.idOrden} AND idImpuesto='${element.id}'`
+                      sql = `SELECT * FROM formas `
+                      sql += `WHERE idOrden=${inJSON.idOrden} AND idImpuesto=${element.id} `
                       con.query(sql, (err, result, fields) => {
-                        if (!err) {
-                          //INSERT NEW ORDEN
-                          c++;
-                          if(inJSON.idImpuestos.length===c){
-                            outJSON.idOrden = inJSON.idOrden
-                            outJSON.dateUp = inJSON.dateUp
-                            sql = `SELECT * FROM folios WHERE idOrden=${inJSON.idOrden} AND tp='f'`
-                            con.query(sql, (err, result, fields) => {
-                            if(result.length>0){
-                              outJSON.folio = result[0].idFolio
+                        if(result.length===0){
+
+                          sql = `INSERT INTO formas (idOrden,idImpuesto,val) VALUES `
+                          sql += `(${inJSON.idOrden},'${element.id}',`
+                          sql += `'${element.val}')`
+                          con.query(sql, (err, result, fields) => {
+                            if (!err) {
+                              //INSERT NEW ORDEN
+                              c++;
+                              if (inJSON.idImpuestos.length === c) {
+                                outFolio()
+                              }
+
                             }
-                            outJSON.exito = 0
-                            setResponse()
-                            })
-                          }
-                                
+                          });
+
+                        }else{
+
+                          sql = `UPDATE formas SET val='${element.val}' WHERE `
+                          sql += `idOrden=${inJSON.idOrden} AND idImpuesto='${element.id}'`
+                          con.query(sql, (err, result, fields) => {
+                            if (!err) {
+                              //INSERT NEW ORDEN
+                              c++;
+                              if (inJSON.idImpuestos.length === c) {
+                                outFolio()
+                              }
+
+                            }
+                          });
+
                         }
-                      });
+                      })
+                      
+
 
                     });
 
