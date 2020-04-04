@@ -80,7 +80,26 @@ informeM = () => {
                   if (!err) {
                     outJSON.lengthR = result.length
                   }
-                  setResponse()
+                  if(inJSON.bandG){
+                    sql = `SELECT * FROM ordenes o WHERE `
+                    sql += `o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}'`
+                    sql += ` ORDER by o.dateUp ASC, o.idOrden ASC`
+
+                    con.query(sql, (err, result, fields) => {
+                      if(!err){
+                        if (result.length > 0) {
+                          outJSON.ordenes = result
+                         
+                        } else {
+                          outJSON.error.name = 'error02';
+                          outJSON.ordenes = []
+                        }
+                      }
+                      setResponse()
+                    });
+                  }else{
+                    setResponse()
+                  }
                 })
               
               })
