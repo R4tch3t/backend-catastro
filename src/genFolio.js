@@ -19,6 +19,7 @@ const server = http.createServer((req, res) => {
         password: process.env.NODE_MYSQL_PASS,
         database: "dbcatastro"
   });
+  let bandF = false
 
  // console.log(`${res.host} : ${res.statusCode}`);
 setResponse = () => {
@@ -35,6 +36,9 @@ folio = () => {
     con.connect((err) => {
       outJSON = {};
       outJSON.error = {};
+      bandF = inJSON.bandF
+      inJSON.idFolio = parseInt(inJSON.idFolio)
+      //console.log(bandF)
       if (err) {
         console.log(`Error: ${err}`);
       } else {
@@ -45,16 +49,54 @@ folio = () => {
             if(result !== undefined){
               outJSON.idFolio = result.insertId
             }
+            setResponse()
           }else{
             outJSON.idFolio = inJSON.idFolio
+            if (err.errno === 1062 /*&& !bandF*/) {
+              sql = `SELECT * FROM folios WHERE idFolio=${inJSON.idFolio}`
+             // console.log(sql)
+              con.query(sql, (err, result, fields) => {
+                if (!err) {
+                  if(result.length>0){
+                    console.log(result)
+                    if (result[0].idOrden !== inJSON.idOrden) {
+                      console.log(result.idOrden)
+                      console.log(inJSON.idOrden)
+                      inJSON.idFolio+=1
+                      con.destroy();
+                      con = mysql.createConnection({
+                        host: "localhost",
+                        user: process.env.NODE_MYSQL_USER,
+                        password: process.env.NODE_MYSQL_PASS,
+                        database: "dbcatastro"
+                      });
+                      //server.close();
+                      //server.listen(port, hostname);                      
+                      folio()
+                    }else{
+                      setResponse()
+                    }
+                  }else{
+                    setResponse()
+                  }
+                }else{
+                  setResponse()
+                }
+              })
+
+            }else{
+              setResponse()
+            }
           }
-          setResponse()
+          //console.log(err)
+          //console.log(err.)
+          
         })
 
       }
     });
     }catch(e){
-      console.log(e)
+      //console.log(e)
     }
 
  }
@@ -73,7 +115,7 @@ folio = () => {
     
       } catch (e) {
           //console.clear()
-          console.log(`error: ${e}`);
+          //console.log(`error: ${e}`);
           outJSON.error.name = `${e}`;
       }
 

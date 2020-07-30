@@ -36,10 +36,12 @@ const server = http.createServer((req, res) => {
         database: "dbcatastro"
   });
   let inCount = 0
+  let workbook = null
+  let worksheet = null
  // console.log(`${res.host} : ${res.statusCode}`);
-  sleep = (milliseconds) => {
+sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
-  }
+}
 
 setResponse = () => {
   outJSON = JSON.stringify(outJSON);
@@ -48,20 +50,34 @@ setResponse = () => {
   server.close();
   server.listen(port, hostname);
 }
-
+getTf = () => {
+  const worksheet2 = workbook._worksheets[wc]
+  worksheet2.eachRow({
+      includeEmpty: true
+    },
+     (row, rowNumber) => {
+      tF = rowNumber
+    });
+}
 endQuerys = () => {  
   if (f === tF) {
     if (tp==="u"){
       tp = "r";
-      wc=2;
+      //wc=2;
       f=2;
-      tF=1206;
+      wc++
+      worksheet = workbook._worksheets[wc]
+      getTf()
+      
       bandW = false;
     } else if (tp === "r") {
       tp = "f";
-      wc = 7;
+      //wc = 7;
       f = 2;
-      tF = 33;
+      wc++
+      worksheet = workbook._worksheets[wc]
+      getTf()
+      //tF = 33;
       bandW = false;
     }else{
       setResponse()
@@ -160,7 +176,7 @@ registrarO = (nombre, CTA, tp, calle, lote, manzana, numero, colonia, cp, munici
         sql += `localidad='${localidad}' WHERE CTA=${CTA}`;
         con.query(sql, (err, result, fields) => {
 
-          sql = `SELECT * FROM ordenes${tp} WHERE CTA=${CTA} AND periodo LIKE '%${Y}' ORDER by idOrden DESC`
+          sql = `SELECT * FROM ordenes${tp} WHERE CTA=${CTA} AND periodo LIKE '%${periodo}' ORDER by idOrden DESC`
           //console.log(sql)
           con.query(sql, (err, result, fields) => {
             if (!err) {
@@ -302,19 +318,28 @@ readEx = async () => {
     con.connect((err) => {
       console.log('readEx')
       console.log(ExcelJS)
-      const workbook = new ExcelJS.Workbook();
-      workbook.xlsx.readFile(`${__dirname}/ENERO CAJA A;.xlsx`)
+      workbook = new ExcelJS.Workbook();
+      workbook.xlsx.readFile(`${__dirname}/FebreroCatastro.xlsx`)
         .then(async function () {
           
           // use workbook
           console.log('read done')
           console.log(workbook._worksheets.length)
-          let worksheet2 = workbook._worksheets[7]
-          console.log(worksheet2.getCell(`A${2}`).value)
+          let worksheet2 = workbook._worksheets[1]
+          worksheet = workbook._worksheets[wc]
+          console.log(`worksheet2: ${worksheet2.getCell(`A0`).rowCount }`)
+          worksheet2.eachRow({
+            includeEmpty: true
+          },
+          function (row, rowNumber) {
+            tF = rowNumber
+            //console.log("Row " + rowNumber + " = " + JSON.stringify(row.values));
+          });
+
           //let worksheet = workbook._worksheets[wc]
           //console.log(`worksheetleng: ${workbook._worksheets[1].}`)
           while(f<(tF+1)){
-            let worksheet = workbook._worksheets[wc]
+            
             await sleep(50)
             let nombre = worksheet.getCell(`A${f}`).value
             if(!bandW&&tp!=="f"){
@@ -359,8 +384,9 @@ readEx = async () => {
               dateUp = new Date(dateUp).toISOString().slice(0, -1);
               //let dateUp = new Date(worksheet.getCell(`S${f}`).value).toISOString();
               const I0020401 = tp === "u" ? 1 : 3
-              idImpuestos.push({id: I0020401, val: V0020401});
-
+              if (V0020401 !== 0) {
+                idImpuestos.push({id: I0020401, val: V0020401});
+              }
               if (V0020801 !== 0) {
                 idImpuestos.push({id: 4, val: V0020801});
               }
@@ -373,8 +399,12 @@ readEx = async () => {
               if (V0030101 !== 0) {
                 idImpuestos.push({ id: 8, val: V0030101 });
               }
-              idImpuestos.push({id: 10, val: V0070201});
-              idImpuestos.push({id: 11, val: V0070202});
+              if (V0070201!==0){
+                idImpuestos.push({id: 10, val: V0070201});
+              }
+              if (V0070202!==0){
+                idImpuestos.push({id: 11, val: V0070202});
+              }
               if (V0070203!==0) {
                 idImpuestos.push({id: 12, val: V0070203});
               }
@@ -390,21 +420,32 @@ readEx = async () => {
               if (V0090704 !== 0) {
                 idImpuestos.push({ id: 19, val: V0090704 });
               }
-              //console.log(idImpuestos);
-              //console.log(`dateUp: ${dateUp}`);
+             // console.log(idImpuestos);
+             // console.log(`cta: ${cta}`);
+             // console.log(`dateUp: ${dateUp}`);
+             // console.log(`nombre: ${nombre}`);
+             // console.log(`periodo: ${periodo}`);
               //console.log(total);
               //console.log(worksheet.getCell(`A${f}`).value)
               registrarO(nombre, cta, tp, calle, lote, mza, num, colonia, 41100, 'CHILAPA DE ÁLVAREZ', 'CHILAPA DE ÁLVAREZ', total, bg, periodo, "", idImpuestos, dateUp)
             } else if (!bandW && tp === "f") {
               bandW = true
-              nombre = nombre === null ? "" : nombre
-              const total = worksheet.getCell(`D${f}`).value;
-              const idImpuestos = []
-              const V0010804 = worksheet.getCell(`C${f}`).value;
-              idImpuestos.push({id: 22, val: V0010804});
-              let dateUp = new Date(worksheet.getCell(`E${f}`).value).setUTCHours(9);
-              dateUp = new Date(dateUp).toISOString().slice(0, -1);
-              insertForma(nombre, 'f', total, idImpuestos, dateUp);
+              //nombre =  === null ? "" : nombre
+              if (worksheet.getCell(`E${f}`).value) {
+                const total = worksheet.getCell(`D${f}`).value;
+                const idImpuestos = []
+                const V0010804 = worksheet.getCell(`C${f}`).value;
+                idImpuestos.push({id: 22, val: V0010804});
+                let dateUp = new Date(worksheet.getCell(`E${f}`).value).setUTCHours(9);
+                dateUp = new Date(dateUp).toISOString().slice(0, -1);
+                //console.log(idImpuestos);
+                //console.log(`cta: ${cta}`);
+               // console.log(`dateUp2: ${tF}`);
+               // console.log(`nombre2: ${worksheet.getCell(`E${f}`).value}`);
+                insertForma(nombre, 'f', total, idImpuestos, dateUp);
+              }else{
+                f++;
+              }
             }
           }
           
