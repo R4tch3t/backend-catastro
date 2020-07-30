@@ -60,8 +60,8 @@ folio = () => {
                   if(result.length>0){
                     console.log(result)
                     if (result[0].idOrden !== inJSON.idOrden) {
-                      console.log(result.idOrden)
-                      console.log(inJSON.idOrden)
+                      //console.log(result.idOrden)
+                      //console.log(inJSON.idOrden)
                       inJSON.idFolio+=1
                       con.destroy();
                       con = mysql.createConnection({
