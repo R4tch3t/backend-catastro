@@ -12,6 +12,10 @@ start /min cmd /c forever start -c node .\src\padrones.js
 start /min cmd /c forever start -c node .\src\predial.js
 start /min cmd /c forever start -c node .\src\registrarC.js
 start /min cmd /c forever start -c node .\src\registrarO.js
+start /min cmd /c forever start -c node .\src\registrarO2.js
+start /min cmd /c forever start -c node .\src\registrarO3.js
+start /min cmd /c forever start -c node .\src\registrarO4.js
+start /min cmd /c forever start -c node .\src\registrarO5.js
 start /min cmd /c forever start -c node .\src\registrarU.js
 start /min cmd /c forever start -c node .\src\saveDataL.js
 start /min cmd /c forever start -c node .\src\informeM.js
