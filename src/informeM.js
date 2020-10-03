@@ -28,14 +28,35 @@ setResponse = () => {
   server.listen(port, hostname);
 }
 
+getCounts = () => {
+  con.connect((err) => {
+        outJSON = {};
+        outJSON.error = {};
+        if (err) {
+          console.log(`Error: ${err}`);
+        } else {
+          let sql = `SELECT * FROM ordenesu`
+          //sql += ``
+          con.query(sql, (err, result, fields) => {
+                if (!err) {
+                  outJSON.countU = result.length
+                  let sql = `SELECT * FROM ordenesr`
+                  //sql += ``
+                  con.query(sql, (err, result, fields) => {
+                        if (!err) {
+                          outJSON.countR = result.length
+                          informeM()
+                        }
+                      });
+                }
+              })
+        }
+  });
+}
+
 informeM = () => {
     try{
-    con.connect((err) => {
-      outJSON = {};
-      outJSON.error = {};
-      if (err) {
-        console.log(`Error: ${err}`);
-      } else {        
+            
         let sql = `SELECT * FROM ordenesu o, padronu pa, predialu pr WHERE `
         sql += `(o.dateUp>='${inJSON.fi}' AND o.dateUp<='${inJSON.ff}') `
         sql += `AND pa.CTA=o.CTA AND pr.idOrden=o.idOrden ORDER by o.dateUp ASC, o.idOrden ASC`
@@ -109,8 +130,7 @@ informeM = () => {
           }
         });
 
-      }
-    });
+      
     }catch(e){
       console.log(e)
     }
@@ -136,7 +156,7 @@ informeM = () => {
       }
 
       if (inJSON.fi!== undefined) {
-        informeM()
+        getCounts()
         
       }else{
         res.end()
