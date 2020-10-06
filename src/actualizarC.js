@@ -41,7 +41,8 @@ actualizar = () => {
         con.query(sql, (err, result, fields) => {
           if (result.length !== 0) {
           sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}', ubicacion='${inJSON.calle}', `
-          sql += `periodo='${inJSON.periodo}' WHERE CTA=${inJSON.CTA}`
+          sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
+          sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', periodo='${inJSON.periodo}' WHERE CTA=${inJSON.CTA}`
           con.query(sql, (err, result, fields) => {
 
               if (!err) {

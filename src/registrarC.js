@@ -42,8 +42,9 @@ registrar = () => {
 
             if (!err) {
               if(result.length===0){
-                sql = `INSERT INTO padron${inJSON.tp}(CTA, contribuyente, ubicacion, basegrav, observaciones, periodo) `
-                sql += `VALUES (${inJSON.CTA},'${inJSON.nombre}','',0,'','${inJSON.periodo}')`
+                sql = `INSERT INTO padron${inJSON.tp}(CTA, contribuyente, ubicacion, m1, m2, tc, zona, bg, observaciones, periodo) `
+                sql += `VALUES (${inJSON.CTA},'${inJSON.nombre}','',${inJSON.m1},${inJSON.m2},${inJSON.tc},${inJSON.zona},${inJSON.bg},`
+                sql += `'','${inJSON.periodo}')`
                 con.query(sql, (err, result, fields) => {
                   if (!err) {
                     outJSON.contribuyente = result
