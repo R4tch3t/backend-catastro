@@ -2,7 +2,6 @@ const mysql = require('mysql');
 const base64 = require('base64topdf');
 const fs = require('fs'); 
 const path = require('path');
-let pdf64 = ''
 const registrarE = (servers, servCount, port, hostname) => (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -92,7 +91,12 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
           console.log(`Error: ${err}`);
           setResponse()
         } else {
-          pdf64+=inJSON.dataPart
+          if(pdf64[inJSON.CTA]===undefined){
+            pdf64[inJSON.CTA]=inJSON.dataPart
+            
+          }else{
+            pdf64[inJSON.CTA]+=inJSON.dataPart
+          }
          // console.log(`pdf64`)
          // console.log(inJSON.count)
           if(inJSON.count<inJSON.lengthE){
@@ -100,12 +104,13 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             setResponse();
           }else{
 
-            pdf64 = pdf64.split('base64,')[1]
+            pdf64[inJSON.CTA] = pdf64[inJSON.CTA].split('base64,')[1]
           //  console.log(`fin ${pdf64}`)
-            if(pdf64){
-              let subPath = "escrituras/"+inJSON.CTA
+            if(pdf64[inJSON.CTA]){
+              let subPath = "escrituras/"+inJSON.tp+"/"+inJSON.CTA
+              console.log(subPath)
               if(!fs.existsSync(path.join(__dirname, subPath))){
-                fs.mkdirSync(path.join(__dirname, subPath))
+                fs.mkdirSync(path.join(__dirname, subPath),{ recursive: true })
                 /*fs.mkdir(path.join(__dirname, subPath), (err) => { 
                   if (err) { 
                       return console.error(err); 
@@ -120,7 +125,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
               }//else{
                 subPath += "/"+inJSON.fileName
                 subPath = path.join(__dirname, subPath)
-                let decodedBase64 = base64.base64Decode(pdf64, subPath);
+                let decodedBase64 = base64.base64Decode(pdf64[inJSON.CTA], subPath);
               //}
               
             }
@@ -135,8 +140,9 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                 sql += ` WHERE CTA=${inJSON.CTA}`
               }*/
               outJSON.next = 0
-              pdf64='';
-              setResponse()
+              pdf64[inJSON.CTA]='';
+              currentCTA[inJSON.port]=undefined;
+              setResponse();
             });
             
 
@@ -184,7 +190,15 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         //bands[servCount] = true
         //new Promise((resolve,reject)=>{
         //  console.log(con.state)
+        if(currentCTA[inJSON.port]===undefined||currentCTA[inJSON.port]===inJSON.CTA){
+          currentCTA[inJSON.port] = inJSON.CTA
           registrar()
+        } else if (currentCTA[inJSON.port]!==inJSON.CTA){
+          outJSON.nextNode = 1
+          outJSON.currentCTA=currentCTA[inJSON.port]
+          setResponse();
+        }
+        console.log(currentCTA[inJSON.port])
           //resolve(1)
         //})
       /*}else{
