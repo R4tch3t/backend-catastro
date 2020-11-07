@@ -5,10 +5,13 @@
   "dependencies": {
     "base64topdf": "^1.1.8",
     "exceljs": "^3.8.2",
+    "forever": "^3.0.2",
     "mysql": "^2.18.1",
+    "phantom": "^6.3.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-scripts": "3.2.0"
+    "react-scripts": "3.2.0",
+    "restify": "^8.5.1"
   },
   "scripts": {
     "start": "react-scripts start",

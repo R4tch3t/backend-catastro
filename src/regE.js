@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const base64 = require('base64topdf');
 const fs = require('fs'); 
 const path = require('path');
+
 const registrarE = (servers, servCount, port, hostname) => (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -141,7 +142,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
               }*/
               outJSON.next = 0
               pdf64[inJSON.CTA]='';
-              currentCTA[inJSON.port]=undefined;
+              currentCTA=undefined;
               setResponse();
             });
             
@@ -190,15 +191,15 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         //bands[servCount] = true
         //new Promise((resolve,reject)=>{
         //  console.log(con.state)
-        if(currentCTA[inJSON.port]===undefined||currentCTA[inJSON.port]===inJSON.CTA){
-          currentCTA[inJSON.port] = inJSON.CTA
+        if(currentCTA===undefined||currentCTA===inJSON.CTA){
+          currentCTA = inJSON.CTA
           registrar()
-        } else if (currentCTA[inJSON.port]!==inJSON.CTA){
+        } else if (currentCTA!==inJSON.CTA){
           outJSON.nextNode = 1
-          outJSON.currentCTA=currentCTA[inJSON.port]
+          outJSON.currentCTA=currentCTA
           setResponse();
         }
-        console.log(currentCTA[inJSON.port])
+        console.log(currentCTA[inJSON.CTA])
           //resolve(1)
         //})
       /*}else{

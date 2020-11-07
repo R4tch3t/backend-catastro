@@ -1,9 +1,8 @@
 const http = require('http');
 const hostname = '0.0.0.0';
-let port = 3031;
+let port = 3032;
 const mysql = require('mysql');
 currentCTA = undefined
-
 pdf64 = {}
 //const { resolve } = require('path');
 const servers = []
@@ -11,7 +10,6 @@ let bands = [false]
 let ports = 3035
 const regE = [];
 let c = 0
-
 //while(port<ports){
   regE.push(require('./regE'))
   const portL = port 
