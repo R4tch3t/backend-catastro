@@ -127,8 +127,14 @@ const server = http.createServer((req, res) => {
                             }
                             setResponse()
                         } else {
-                            //outJSON.portEn = { n: inJSON.port + 1 }
-                            checkPorts(parseInt(port) + 1)
+                            const today = new Date()
+                            if (today.getTime() <= portTable[port].dateOut.getTime()) {
+                                portTable[port] = undefined
+                                checkPorts(parseInt(port))
+                            } else {
+                                //outJSON.portEn = { n: inJSON.port + 1 }
+                                checkPorts(parseInt(port) + 1)
+                            }
                         }
                     }
 

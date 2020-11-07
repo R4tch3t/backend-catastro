@@ -1,3 +1,5 @@
+#!/bin/bash
+i="0"
 forever start src/actualizarC.js & 
 forever start src/actualizarP.js &
 forever start src/actualizarU.js &
@@ -23,4 +25,10 @@ forever start src/registrarO4.js &
 forever start src/registrarO5.js &
 forever start src/registrarU.js &
 forever start src/saveDataL.js &
-#forever start src/checkPorts.js
+forever start src/checkPorts.js
+while [ $i -lt 16 ]
+do
+forever start "src/registrarE$i.js"
+i=$[$i+1]
+#portC=$[$portC+1]
+done

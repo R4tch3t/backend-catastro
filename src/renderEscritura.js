@@ -17,7 +17,7 @@ server.get('/escrituras/:tp/:CTA/:escritura', function(req, res, next) {
         var filename = "escrituras/" + req.params.tp + "/" + req.params.CTA
         filename += "/" + req.params.escritura
             //filename = path.join(__dirname, filename)
-        console.log(filename)
+            // console.log(filename)
             // file = tmpdir + filename;
         setResponseHeaders(res, req.params.escritura);
         fs.createReadStream(path.join(__dirname, filename)).pipe(res);
