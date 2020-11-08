@@ -1,9 +1,20 @@
-const http = require('http');
+let http = require('https');
 const hostname = '0.0.0.0';
 const port = 3021;
 const mysql = require('mysql');
+const fs = require('fs');
+let options = null
+try{
+options = {
+    key: fs.readFileSync('/opt/lampp/etc/ssl.key/server.key'),
+    cert: fs.readFileSync('/opt/lampp/etc/ssl.crt/server.cer')
+}
+}catch(e){
+    http = require('http');
+    console.log(e)
+}
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(options,(req, res) => {
   res.writeHead(200, {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin' : '*',
