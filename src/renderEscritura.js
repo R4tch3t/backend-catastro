@@ -38,7 +38,7 @@ server.get('/escrituras/:tp/:CTA/:escritura', function(req, res, next) {
         })();*/
 
     } catch (e) {
-
+        console.log(e)
     }
 });
 

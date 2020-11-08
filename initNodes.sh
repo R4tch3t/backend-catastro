@@ -25,10 +25,11 @@ forever start src/registrarO4.js &
 forever start src/registrarO5.js &
 forever start src/registrarU.js &
 forever start src/saveDataL.js &
-forever start src/checkPorts.js
-while [ $i -lt 16 ]
+forever start src/checkPorts.js &
+forever start src/renderEscritura.js
+while [ $i -lt 64 ]
 do
-forever start "src/registrarE$i.js"
+forever start "src/upPdf/registrarE$i.js"
 i=$[$i+1]
 #portC=$[$portC+1]
 done
