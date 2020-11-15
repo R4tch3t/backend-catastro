@@ -1,4 +1,4 @@
-echo off
+echo on
 echo Inicializando puertos...
 start /min cmd /c forever stopall
 start /min cmd /c forever start -c node .\src\actualizarP.js
@@ -23,3 +23,12 @@ start /min cmd /c forever start -c node .\src\actualizarC.js
 start /min cmd /c forever start -c node .\src\registrarF.js
 start /min cmd /c forever start -c node .\src\folios.js
 start /min cmd /c forever start -c node .\src\genFolio.js
+start /min cmd /c forever start -c node .\src\renderEscritura.js
+start /min cmd /c forever start -c node .\src\getEscritura.js
+start /min cmd /c forever start -c node .\src\checkPorts.js
+set n=0
+:loop
+echo %n%
+start /min cmd /c forever start -c node .\src\upPdf\registrarE%n%.js
+set /a n+=1
+if %n% LSS 64 GOTO loop
