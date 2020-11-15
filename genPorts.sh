@@ -6,7 +6,7 @@ mkdir src/upPdf
 
 while [ $i -lt 64 ]
 do
-str="const http = require('http');
+str="let http = require('https');
 
 const hostname = '0.0.0.0';
 let port = $portC;"
@@ -16,7 +16,18 @@ str+="pdf64 = {};"
 str+="const servers = [];"
 str+="let bands = [false];"
 str+="const regE = require('../regE');"
-str+="servers.push(http.createServer(regE.regE(servers, servers.length, port, hostname)));" 
+str+="const fs = require('fs');"
+str+="let options = null;"
+str+="try{"
+str+="options = {"
+str+="key: fs.readFileSync('/opt/lampp/etc/ssl.key/server.key'),"
+str+="cert: fs.readFileSync('/opt/lampp/etc/ssl.crt/server.cer')"
+str+="};"
+str+="}catch(e){"
+str+="http=require('http');"
+str+="console.log(e);"
+str+="}"
+str+="servers.push(http.createServer(options,regE.regE(servers, servers.length, port, hostname)));" 
 str+="servers[servers.length - 1].maxConnections = 1;" 
 str+="servers[servers.length - 1].listen(port, hostname, () => {"
 str+="console.log('Server running at http://'+hostname+':'+port+'/');"
