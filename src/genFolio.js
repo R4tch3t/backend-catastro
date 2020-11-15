@@ -64,16 +64,31 @@ folio = () => {
           }else{
             outJSON.idFolio = inJSON.idFolio
             if (err.errno === 1062 /*&& !bandF*/) {
-              sql = `SELECT * FROM folios WHERE idFolio=${inJSON.idFolio}`
+              sql = `SELECT * FROM folios WHERE idOrden='${inJSON.idOrden}' ORDER BY idFolio DESC`
              // console.log(sql)
               con.query(sql, (err, result, fields) => {
                 if (!err) {
                   if(result.length>0){
-                    console.log(result)
-                    if (result[0].idOrden !== inJSON.idOrden) {
+                    let bandIn = true
+                    result.map((val, key) =>{
+                      if(val.tp===inJSON.tp){
+                        bandIn=false
+                        outJSON.idFolio = val.idFolio
+                        setResponse();
+                      }
+                    })
+                    if (bandIn) {
+                      sql = `INSERT INTO folios(idFolio, idOrden, tp) VALUES (null,${inJSON.idOrden},'${inJSON.tp}')`
+                      con.query(sql, (err, result) => {
+                        if(result !== undefined){
+                          outJSON.idFolio = result.insertId
+                        }
+                        setResponse();
+                      });
+                    }
                       //console.log(result.idOrden)
                       //console.log(inJSON.idOrden)
-                      inJSON.idFolio+=1
+                      /*inJSON.idFolio+=1
                       con.destroy();
                       con = mysql.createConnection({
                         host: "localhost",
@@ -83,12 +98,23 @@ folio = () => {
                       });
                       //server.close();
                       //server.listen(port, hostname);                      
-                      folio()
-                    }else{
+                      folio()*/
+                    /*}else{
+                      outJSON.idFolio=parseInt(result[0].idFolio)
+                      outJSON.idFolio+=1
                       setResponse()
-                    }
+                      setResponse()
+                    }*/
+                    
                   }else{
-                    setResponse()
+                    
+                      sql = `INSERT INTO folios(idFolio, idOrden, tp) VALUES (${inJSON.idFolio},${inJSON.idOrden},'${inJSON.tp}')`
+                      con.query(sql, (err, result) => {
+                        if(result !== undefined){
+                          outJSON.idFolio = result.insertId
+                        }
+                        setResponse();
+                      });
                   }
                 }else{
                   setResponse()
@@ -143,3 +169,5 @@ folio = () => {
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+
