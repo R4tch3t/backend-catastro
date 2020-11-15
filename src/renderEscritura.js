@@ -11,16 +11,17 @@ function setResponseHeaders(res, filename) {
     res.header('Content-disposition', 'inline; filename=' + filename);
     res.header('Content-type', 'application/pdf');
 }
-let options = null
-try{
-options = {
-    key: fs.readFileSync('/opt/lampp/etc/ssl.key/server.key'),
-    cert: fs.readFileSync('/opt/lampp/etc/ssl.crt/server.cer')
-}
-}catch(e){
-//    http = require('http');
-    console.log(e)
-}
+const path = require('path');
+ let options = null
+ try{
+     options = {
+         key: fs.readFileSync(path.join(__dirname, "cert/server.key")),
+         cert: fs.readFileSync(path.join(__dirname, "cert/server.cer"))
+     }
+ }catch(e){
+  //   http = require('http');
+     console.log(e)
+ }
 var server = restify.createServer(options);
 
 server.get('/escrituras/:tp/:CTA/:escritura', function(req, res, next) {

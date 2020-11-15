@@ -10,16 +10,17 @@ let ports = 3040
     //const Pdf = require('../renderPDF');
 const regO = require('./regO');
 const fs = require('fs');
-let options = null
-try {
-    options = {
-        key: fs.readFileSync('/opt/lampp/etc/ssl.key/server.key'),
-        cert: fs.readFileSync('/opt/lampp/etc/ssl.crt/server.cer')
-    }
-} catch (e) {
-    http = require('http');
-    console.log(e)
-}
+const path = require('path');
+ let options = null
+ try{
+     options = {
+         key: fs.readFileSync(path.join(__dirname, "cert/server.key")),
+         cert: fs.readFileSync(path.join(__dirname, "cert/server.cer"))
+     }
+ }catch(e){
+     http = require('http');
+     console.log(e)
+ }
 
 //servers.push(http.createServer(registrarO(0,port)));
 servers.push(http.createServer(options, regO.regO(servers, 0, port, hostname)));
