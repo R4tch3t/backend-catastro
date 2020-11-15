@@ -3,16 +3,17 @@ const hostname = '0.0.0.0';
 const port = 3022;
 const mysql = require('mysql');
  const fs = require('fs');
-let options = null
-try{
-options = {
-    key: fs.readFileSync('/opt/lampp/etc/ssl.key/server.key'),
-    cert: fs.readFileSync('/opt/lampp/etc/ssl.crt/server.cer')
-}
-}catch(e){
-    http = require('http');
-    console.log(e)
-}
+ const path = require('path');
+ let options = null
+ try{
+     options = {
+         key: fs.readFileSync(path.join(__dirname, "cert/server.key")),
+         cert: fs.readFileSync(path.join(__dirname, "cert/server.cer"))
+     }
+ }catch(e){
+     http = require('http');
+     console.log(e)
+ }
 
 const server = http.createServer(options,(req, res) => {
   res.writeHead(200, {
