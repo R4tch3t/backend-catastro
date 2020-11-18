@@ -1,4 +1,4 @@
-var restify = require('restify'),
+var http = require('restify'),
     port = 2998,
     // phantom = require('phantom'),
     //tmpdir = require('os').tmpdir(),
@@ -11,18 +11,17 @@ function setResponseHeaders(res, filename) {
     res.header('Content-disposition', 'inline; filename=' + filename);
     res.header('Content-type', 'application/pdf');
 }
-const path = require('path');
- let options = null
- try{
-     options = {
-         key: fs.readFileSync(path.join(__dirname, "cert/server.key")),
-         cert: fs.readFileSync(path.join(__dirname, "cert/server.cer"))
-     }
- }catch(e){
-  //   http = require('http');
-     console.log(e)
- }
-var server = restify.createServer(options);
+let options = null
+try {
+    options = {
+        key: fs.readFileSync(path.join(__dirname, "cert/server.key")),
+        cert: fs.readFileSync(path.join(__dirname, "cert/server.cer"))
+    }
+} catch (e) {
+    //   http = require('http');
+    console.log(e)
+}
+var server = http.createServer(options);
 
 server.get('/escrituras/:tp/:CTA/:escritura', function(req, res, next) {
     try {
