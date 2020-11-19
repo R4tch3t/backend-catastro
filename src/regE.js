@@ -13,6 +13,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     let inJSON = '';
     var outJSON = {};
     outJSON.error = {};
+    let npage = 3
     var con = mysql.createConnection({
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
@@ -83,8 +84,66 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         });
     }
 
-    spellToNumber = (txt) => {
-        return txt.replace("DIECISEIS","16")
+    renderPages = (subPath) => {
+        var PDFImage = require("pdf-image").PDFImage;
+                        //const url = require('url');
+                        //subPath = url.pathToFileURL(subPath);
+                        //subPath=subPath.split(" ").join("20%")
+                       // subPath="'"+subPath+"'"
+                      //  console.log(subPath)
+                        var pdfImage = new PDFImage(subPath);
+                        pdfImage.convertPage(npage).then(async (imagePath) => {
+                            // 0-th page (first page) of the slide.pdf is available as slide-0.
+                            const vision = require('@google-cloud/vision');
+                                                        // Creates a client
+                            const client = new vision.ImageAnnotatorClient();
+
+                            // const fileName = 'Local image file, e.g. /path/to/image.png';
+
+                            // Performs text detection on the local file
+                            const [result] = await client.documentTextDetection(imagePath);
+                            const detections = result.textAnnotations;
+                            //console.log('Text:');
+                            let txt = ""
+                            let prevLit = ""
+                            detections.forEach(text => {
+                                //txt+=text.description.slice(0,text.description.length-3)+" "
+                                txt=text.description
+                                
+                                if(txt==="="&&(prevLit==="S"||prevLit==="s")){
+                                     outJSON.S = txt
+                                }
+                                if(txt.includes("m²")){
+                                    outJSON.S = prevLit
+                                }
+                                prevLit = txt
+                              //  console.log(txt)
+                            });
+                            if(!outJSON.S){
+                                npage++;
+                                renderPages(subPath)
+                            }else{
+                                let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
+                                sql += ` WHERE CTA=${inJSON.CTA}`
+                                    //console.log(sql)
+                                con.query(sql, (err, result, fields) => {
+
+                                    /*if (result.length !== 0) {
+                                    sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
+                                    //sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
+                                    sql += ` WHERE CTA=${inJSON.CTA}`
+                                    }*/
+                                    outJSON.next = 0
+                                // txt = txt.slice(0,txt.length-3)
+                                    outJSON.next = 0
+                                    pdf64[inJSON.CTA] = '';
+                                    currentCTA = undefined;
+                                    setResponse();
+                                });
+                            }
+                        }).catch(e=>{
+                            console.log(e)
+                        });
     }
 
 registrar = () => {
@@ -131,61 +190,8 @@ registrar = () => {
                         subPath += "/" + inJSON.fileName
                         subPath = path.join(__dirname, subPath)
                         let decodedBase64 = base64.base64Decode(pdf64[inJSON.CTA], subPath);
-                        var PDFImage = require("pdf-image").PDFImage;
-                        //const url = require('url');
-                        //subPath = url.pathToFileURL(subPath);
-                        //subPath=subPath.split(" ").join("20%")
-                       // subPath="'"+subPath+"'"
-                      //  console.log(subPath)
-                        var pdfImage = new PDFImage(subPath);
-                        pdfImage.convertPage(3).then(async (imagePath) => {
-                            // 0-th page (first page) of the slide.pdf is available as slide-0.
-                            const vision = require('@google-cloud/vision');
-                                                        // Creates a client
-                            const client = new vision.ImageAnnotatorClient();
-
-                            // const fileName = 'Local image file, e.g. /path/to/image.png';
-
-                            // Performs text detection on the local file
-                            const [result] = await client.documentTextDetection(imagePath);
-                            const detections = result.textAnnotations;
-                            //console.log('Text:');
-                            let txt = ""
-                            let prevLit = ""
-                            detections.forEach(text => {
-                                //txt+=text.description.slice(0,text.description.length-3)+" "
-                                txt=text.description
-                                
-                                if(txt==="="&&(prevLit==="S"||prevLit==="s")){
-                                     outJSON.S = txt
-                                }
-                                if(txt.includes("m²")){
-                                    outJSON.S = prevLit
-                                }
-                                prevLit = txt
-                              //  console.log(txt)
-                            });
-
-                            let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
-                            sql += ` WHERE CTA=${inJSON.CTA}`
-                                //console.log(sql)
-                            con.query(sql, (err, result, fields) => {
-
-                                /*if (result.length !== 0) {
-                                sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
-                                //sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
-                                sql += ` WHERE CTA=${inJSON.CTA}`
-                                }*/
-                                outJSON.next = 0
-                               // txt = txt.slice(0,txt.length-3)
-                                outJSON.next = 0
-                                pdf64[inJSON.CTA] = '';
-                                currentCTA = undefined;
-                                setResponse();
-                            });
-                        }).catch(e=>{
-                            console.log(e)
-                        });
+                        renderPages(subPath)
+                        
                             //const url = require('url');
                             //imagePath = imagePath.split("\\");
                             //imagePath = imagePath[imagePath.length-1];
