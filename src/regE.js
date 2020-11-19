@@ -83,87 +83,219 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         });
     }
 
-    registrar = () => {
-            try {
-                con.connect((err) => {
-                    outJSON = {};
-                    outJSON.error = {};
-                    if (err) {
-                        console.log(`Error: ${err}`);
-                        setResponse()
-                    } else {
-                        if (pdf64[inJSON.CTA] === undefined) {
-                            pdf64[inJSON.CTA] = inJSON.dataPart
+    spellToNumber = (txt) => {
+        return txt.replace("DIECISEIS","16")
+    }
 
-                        } else {
-                            pdf64[inJSON.CTA] += inJSON.dataPart
-                        }
-                        // console.log(`pdf64`)
-                        // console.log(inJSON.count)
-                        if (inJSON.count < inJSON.lengthE) {
-                            outJSON.next = 1
-                            setResponse();
-                        } else {
-                            inJSON.CTA = parseInt(inJSON.CTA)
-                            pdf64[inJSON.CTA] = pdf64[inJSON.CTA].split('base64,')[1]
-                                //  console.log(`fin ${pdf64}`)
-                            if (pdf64[inJSON.CTA]) {
-                                let subPath = "escrituras/" + inJSON.tp + "/" + inJSON.CTA
-                                    // console.log(subPath)
-                                if (!fs.existsSync(path.join(__dirname, subPath))) {
-                                    fs.mkdirSync(path.join(__dirname, subPath), { recursive: true })
-                                        /*fs.mkdir(path.join(__dirname, subPath), (err) => { 
-                                          if (err) { 
-                                              return console.error(err); 
-                                          } 
-                                          console.log('Directory created successfully!'); 
-                                          subPath += "/"+inJSON.fileName
-                                          //subPath = "src/"+subPath
-                                          subPath = path.join(__dirname, subPath)
-                                          console.log(`subPath ${subPath}`)
-                                          let decodedBase64 = base64.base64Decode(pdf64, subPath);
-                                        });*/
-                                } //else{
-                                subPath += "/" + inJSON.fileName
+registrar = () => {
+    try {
+        con.connect((err) => {
+            outJSON = {};
+            outJSON.error = {};
+            if (err) {
+                console.log(`Error: ${err}`);
+                setResponse()
+            } else {
+                if (pdf64[inJSON.CTA] === undefined) {
+                    pdf64[inJSON.CTA] = inJSON.dataPart
+
+                } else {
+                    pdf64[inJSON.CTA] += inJSON.dataPart
+                }
+                // console.log(`pdf64`)
+                // console.log(inJSON.count)
+                if (inJSON.count < inJSON.lengthE) {
+                    outJSON.next = 1
+                    setResponse();
+                } else {
+                    inJSON.CTA = parseInt(inJSON.CTA)
+                    pdf64[inJSON.CTA] = pdf64[inJSON.CTA].split('base64,')[1]
+                        //  console.log(`fin ${pdf64}`)
+                    if (pdf64[inJSON.CTA]) {
+                        let subPath = "escrituras/" + inJSON.tp + "/" + inJSON.CTA
+                            // console.log(subPath)
+                        if (!fs.existsSync(path.join(__dirname, subPath))) {
+                            fs.mkdirSync(path.join(__dirname, subPath), { recursive: true })
+                                /*fs.mkdir(path.join(__dirname, subPath), (err) => { 
+                                if (err) { 
+                                    return console.error(err); 
+                                } 
+                                console.log('Directory created successfully!'); 
+                                subPath += "/"+inJSON.fileName
+                                //subPath = "src/"+subPath
                                 subPath = path.join(__dirname, subPath)
-                                let decodedBase64 = base64.base64Decode(pdf64[inJSON.CTA], subPath);
-                                //}
+                                console.log(`subPath ${subPath}`)
+                                let decodedBase64 = base64.base64Decode(pdf64, subPath);
+                                });*/
+                        } //else{
+                        subPath += "/" + inJSON.fileName
+                        subPath = path.join(__dirname, subPath)
+                        let decodedBase64 = base64.base64Decode(pdf64[inJSON.CTA], subPath);
+                        var PDFImage = require("pdf-image").PDFImage;
+                        //const url = require('url');
+                        //subPath = url.pathToFileURL(subPath);
+                        //subPath=subPath.split(" ").join("20%")
+                       // subPath="'"+subPath+"'"
+                      //  console.log(subPath)
+                        var pdfImage = new PDFImage(subPath);
+                        pdfImage.convertPage(3).then(async (imagePath) => {
+                            // 0-th page (first page) of the slide.pdf is available as slide-0.
+                            const vision = require('@google-cloud/vision');
+                                                        // Creates a client
+                            const client = new vision.ImageAnnotatorClient();
 
-                            }
+                            // const fileName = 'Local image file, e.g. /path/to/image.png';
+
+                            // Performs text detection on the local file
+                            const [result] = await client.documentTextDetection(imagePath);
+                            const detections = result.textAnnotations;
+                            //console.log('Text:');
+                            let txt = ""
+                            let prevLit = ""
+                            detections.forEach(text => {
+                                //txt+=text.description.slice(0,text.description.length-3)+" "
+                                txt=text.description
+                                
+                                if(txt==="="&&(prevLit==="S"||prevLit==="s")){
+                                     outJSON.S = txt
+                                }
+                                if(txt.includes("m²")){
+                                    outJSON.S = prevLit
+                                }
+                                prevLit = txt
+                              //  console.log(txt)
+                            });
+
                             let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
                             sql += ` WHERE CTA=${inJSON.CTA}`
                                 //console.log(sql)
                             con.query(sql, (err, result, fields) => {
 
                                 /*if (result.length !== 0) {
-                                  sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
-                                  //sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
-                                  sql += ` WHERE CTA=${inJSON.CTA}`
+                                sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
+                                //sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
+                                sql += ` WHERE CTA=${inJSON.CTA}`
                                 }*/
+                                outJSON.next = 0
+                               // txt = txt.slice(0,txt.length-3)
                                 outJSON.next = 0
                                 pdf64[inJSON.CTA] = '';
                                 currentCTA = undefined;
                                 setResponse();
                             });
+                        }).catch(e=>{
+                            console.log(e)
+                        });
+                            //const url = require('url');
+                            //imagePath = imagePath.split("\\");
+                            //imagePath = imagePath[imagePath.length-1];
+                            //imagePath = `http://localhost:2999/escrituras/${inJSON.tp}/${inJSON.tp}/${inJSON.CTA}/${}`
+/*
+                              // read binary data
+                                var bitmap = fs.readFileSync(imagePath);
+                                
+                                // convert binary data to base64 encoded string
+                                let base64 =`data:image/jpeg;base64,${Buffer(bitmap).toString('base64')}`;
+                            
+                            const bodyJSON = {
+                                src: base64,
+                                "formats": ["text"],
+                                "alphabets_allowed": {
+                                    "hi": false,
+                                    "zh": false,
+                                    "ja": false, 
+                                    "ko": false,
+                                    "ru": false,
+                                    "th": false
+                                    },
+                                data_options: {
+                                include_asciimath: false,
+                                include_latex: false,
+                                },
+                            };
+                         ///   console.log(bodyJSON)
+                            const request = require('request')
 
-
+                                request.post(
+                                'https://api.mathpix.com/v3/text',
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        Accept: 'application/json',
+                                        'Content-Type': 'application/json',
+                                        app_id: 'bebetovictor_gmail_com_624c02',
+                                        app_key: '95cbf36020ce3e06f9a9',
+                                        },
+                                    body: JSON.stringify(bodyJSON),
+                                },
+                                (error, res, body) => {
+                                    if (error) {
+                                    console.error(error)
+                                    return
+                                    }
+                                    console.log(`statusCode: ${res.statusCode}`)
+                                    body=JSON.parse(body);
+                                    console.log(body.text)
+                                }
+                            )
+                            
+                        }).catch(e=>{
+                            console.log(e)
+                        });
+                        */
+                        /*let pdf_extract = require('pdf-ocr');
+                       
+                        
+                        var inspect = require('eyes').inspector({maxLength:20000});
+                    // var absolute_path_to_pdf = '~/Downloads/sample.pdf'
+                        let options = {
+                            type: 'ocr' // perform ocr to get the text within the scanned image
                         }
 
-                        /*let sql = `SELECT * FROM padron${inJSON.tp} WHERE CTA=${inJSON.CTA}`
-        con.query(sql, (err, result, fields) => {
-          if (result.length !== 0) {
-            sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}', ubicacion='${inJSON.calle}', `
-            sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
-            sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', periodo='${inJSON.periodo}' WHERE CTA=${inJSON.CTA}`
-          }
-        });*/
-                    }
+                        var processor = pdf_extract(subPath, options, function(err) {
+                            if (err) {
+                                return callback(err);
+                            }
+                            });
+                            processor.on('complete', function(data) {
+                              //  inspect(data.text_pages, 'extracted text pages');
+                                console.log('extracted text pages')
+                                console.log(data)
+                         //       callback(null, text_pages);
+                            });
+                            processor.on('error', function(err) {
+                              //  inspect(err, 'error while extracting pages');
+                                console.log('error')
+                                console.log(err)
+                           //     return callback(err);
+                            });
+                            processor.on('page', (data) => {
+                                console.log('page')
+                                console.log(data)
+                            });
+                        //}*/
 
-                });
-            } catch (e) {
-                console.log(e)
+                    }
+                    
+
+
+                }
+
+                /*let sql = `SELECT * FROM padron${inJSON.tp} WHERE CTA=${inJSON.CTA}`
+con.query(sql, (err, result, fields) => {
+if (result.length !== 0) {
+    sql = `UPDATE padron${inJSON.tp} SET contribuyente='${inJSON.nombre}', ubicacion='${inJSON.calle}', `
+    sql += `m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
+    sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', periodo='${inJSON.periodo}' WHERE CTA=${inJSON.CTA}`
+}
+});*/
             }
-        }
+
+        });
+    } catch (e) {
+        console.log(e)
+    }
+}
         //servers[servers.length - 1].maxConnections=1
     req.setEncoding('utf8');
 
