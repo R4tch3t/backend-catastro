@@ -133,7 +133,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                                 let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}' m1='${outJSON.S}'`
                                 sql += ` WHERE CTA=${inJSON.CTA}`
                                     //console.log(sql)
-                                con.query(sql, (err, result, fields) => {
+                                con.query(sql, (err, result, fields) => { 
 
                                     /*if (result.length !== 0) {
                                     sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
