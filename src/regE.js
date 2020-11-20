@@ -106,8 +106,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                             //console.log('Text:');
                             let txt = ""
                             let prevLit = ""
-                            console.log("detections")
-                            console.log(detections)
+                          //  console.log("detections")
+                          //  console.log(detections)
                             outJSON.S=null
                             detections.forEach(text => {
                                 //txt+=text.description.slice(0,text.description.length-3)+" "
