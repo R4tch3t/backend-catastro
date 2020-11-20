@@ -106,24 +106,31 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                             //console.log('Text:');
                             let txt = ""
                             let prevLit = ""
+                            console.log("detections")
+                            console.log(detections)
+                            outJSON.S=null
                             detections.forEach(text => {
                                 //txt+=text.description.slice(0,text.description.length-3)+" "
                                 txt=text.description
                                 
                                 if(txt==="="&&(prevLit==="S"||prevLit==="s")){
-                                     outJSON.S = txt
+                                     //outJSON.S = txt
+                                     prevLit  = txt
                                 }
                                 if(txt.includes("m²")){
                                     outJSON.S = prevLit
                                 }
+                                if(prevLit.includes("=")){
+                                    outJSON.S = txt.replace("M2","").replace("m2","");
+                                }
                                 prevLit = txt
                               //  console.log(txt)
                             });
-                            if(!outJSON.S){
+                            if(outJSON.S===null){
                                 npage++;
                                 renderPages(subPath)
                             }else{
-                                let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}'`
+                                let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}' m1='${outJSON.S}'`
                                 sql += ` WHERE CTA=${inJSON.CTA}`
                                     //console.log(sql)
                                 con.query(sql, (err, result, fields) => {
@@ -135,7 +142,9 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                                     }*/
                                     outJSON.next = 0
                                 // txt = txt.slice(0,txt.length-3)
-                                    outJSON.next = 0
+                                  //  outJSON.next = 0
+                               //   console.log(outJSON)
+
                                     pdf64[inJSON.CTA] = '';
                                     currentCTA = undefined;
                                     setResponse();
@@ -190,8 +199,8 @@ registrar = () => {
                         subPath += "/" + inJSON.fileName
                         subPath = path.join(__dirname, subPath)
                         let decodedBase64 = base64.base64Decode(pdf64[inJSON.CTA], subPath);
-                        renderPages(subPath)
                         
+                        renderPages(subPath)
                             //const url = require('url');
                             //imagePath = imagePath.split("\\");
                             //imagePath = imagePath[imagePath.length-1];
