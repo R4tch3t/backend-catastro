@@ -14,6 +14,10 @@ try {
     console.log(e)
 }
 var app = express();
+function setResponseHeaders(res, filename) {
+    res.header('Content-disposition', 'inline; filename=' + filename);
+    res.header('Content-type', 'application/pdf');
+}
 https.createServer(options, app).listen(PORT, function(){
     console.log("My https server listening on port " + PORT + "...");
 });
