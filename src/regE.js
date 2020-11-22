@@ -32,7 +32,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     }
 
     analice = () => {
-        let subPath = "escrituras/" + inJSON.tp + "/" + inJSON.CTA
+        let subPath = "expedientes/" + inJSON.tp + "/" + inJSON.CTA
         subPath += "/" + inJSON.fileName
         subPath = path.join(__dirname, subPath)
         renderPages(subPath)
@@ -160,7 +160,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                                         });*/
                                 } //else{
                                 subPath += "/" + inJSON.fileName
-                                subPath = path.join(__dirname, subPath)
+                                //subPath = path.join(__dirname, subPath)
                                 let decodedBase64 = base64.base64Decode(pdf64[inJSON.CTA], subPath);
 
                                 let sql = `UPDATE padron${inJSON.tp} SET escriturasPath='${inJSON.fileName}' `
