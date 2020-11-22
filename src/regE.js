@@ -32,9 +32,9 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     }
 
     analice = () => {
-        let subPath = "expedientes/" + inJSON.tp + "/" + inJSON.CTA
+        let subPath = "/var/expedientes/" + inJSON.tp + "/" + inJSON.CTA
         subPath += "/" + inJSON.fileName
-        subPath = path.join(__dirname, subPath)
+       // subPath = path.join(__dirname, subPath)
         renderPages(subPath)
     }
 
