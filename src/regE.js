@@ -143,10 +143,10 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                             pdf64[inJSON.CTA] = pdf64[inJSON.CTA].split('base64,')[1]
                                 //  console.log(`fin ${pdf64}`)
                             if (pdf64[inJSON.CTA]) {
-                                let subPath = "escrituras/" + inJSON.tp + "/" + inJSON.CTA
+                                let subPath = "/var/expedientes/" + inJSON.tp + "/" + inJSON.CTA
                                     // console.log(subPath)
-                                if (!fs.existsSync(path.join(__dirname, subPath))) {
-                                    fs.mkdirSync(path.join(__dirname, subPath), { recursive: true })
+                                if (!fs.existsSync(subPath)) {
+                                    fs.mkdirSync(subPath, { recursive: true })
                                         /*fs.mkdir(path.join(__dirname, subPath), (err) => { 
                                         if (err) { 
                                             return console.error(err); 
