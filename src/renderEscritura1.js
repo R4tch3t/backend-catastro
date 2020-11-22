@@ -1,7 +1,16 @@
-var fs = require('fs');
-var https = require('https');
-var express = require('express');
-const PORT = 2998;
+var http = require('express'),
+    port = 2998,
+    // phantom = require('phantom'),
+    //tmpdir = require('os').tmpdir(),
+    fs = require('fs');
+
+
+const path = require('path');
+
+function setResponseHeaders(res, filename) {
+    res.header('Content-disposition', 'inline; filename=' + filename);
+    res.header('Content-type', 'application/pdf');
+}
 let options = null
 try {
     options = {
@@ -12,11 +21,9 @@ try {
     //   http = require('http');
     console.log(e)
 }
-var app = express();
-https.createServer(options, app).listen(PORT, function(){
-    console.log("My https server listening on port " + PORT + "...");
-});
-app.get('/expediente/:tp/:CTA/:escritura', function(req, res){
+var server = http.createServer(options);
+
+server.get('/expediente/:tp/:CTA/:escritura', function(req, res, next) {
     try {
         var filename = "/var/expedientes/" + req.params.tp + "/" + req.params.CTA
         filename += "/" + req.params.escritura
@@ -45,4 +52,8 @@ app.get('/expediente/:tp/:CTA/:escritura', function(req, res){
     } catch (e) {
         console.log(e)
     }
+});
+
+server.listen(port, function() {
+    console.log("Listening on port %s...", port);
 });
