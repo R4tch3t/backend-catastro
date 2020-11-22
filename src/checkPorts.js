@@ -115,7 +115,8 @@ const server = http.createServer(options, (req, res) => {
 
     checkPorts = (port = 3031) => {
         try {
-
+            console.log("portTable:")
+            console.log(portTable)
             switch (parseInt(inJSON.op)) {
                 case 0:
 
