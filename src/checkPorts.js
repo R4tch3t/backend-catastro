@@ -142,7 +142,7 @@ const server = http.createServer(options, (req, res) => {
                             setResponse()
                         } else {
                             const today = new Date()
-                            if (today.getTime() <= portTable[port].dateOut.getTime()) {
+                            if (today.getTime() >= portTable[port].dateOut.getTime()) {
                                 portTable[port] = undefined
                                 checkPorts(parseInt(port))
                             } else {
