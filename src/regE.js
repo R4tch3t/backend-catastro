@@ -1,8 +1,7 @@
 const mysql = require('mysql');
 const base64 = require('base64topdf');
 const fs = require('fs');
-const path = require('path');
-
+pdf64 = {}
 const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     res.writeHead(200, {
         'Content-Type': 'application/json',

@@ -12,7 +12,6 @@ const hostname = '0.0.0.0';
 let port = $portC;"
 str+="const mysql = require('mysql');"
 str+="currentCTA = undefined;"
-str+="pdf64 = {};"
 str+="const servers = [];"
 str+="let bands = [false];"
 str+="const regE = require('../regE');"
