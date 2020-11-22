@@ -330,7 +330,6 @@ if (result.length !== 0) {
                     outJSON.currentCTA = currentCTA
                     setResponse();
                 }
-                console.log(currentCTA[inJSON.CTA])
             } else {
                 analice()
 
