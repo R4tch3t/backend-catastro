@@ -4,7 +4,7 @@ portC="3031"
 i="0"
 mkdir src/upPdf
 
-while [ $i -lt 64 ]
+while [ $i -lt 1024 ]
 do
 str="let http = require('https');
 
