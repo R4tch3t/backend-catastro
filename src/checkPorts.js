@@ -223,7 +223,7 @@ const server = http.createServer(options, (req, res) => {
         }
     });
 });
-servers.maxConnections = 1024;
+server.maxConnections = 1024;
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
