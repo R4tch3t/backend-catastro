@@ -81,6 +81,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             });
             if (outJSON.S === null) {
                 inJSON.npage++;
+                outJSON.npage=inJSON.npage;
                 console.log("pdfImage.length")
                 console.log(pdfImage.getInfo.length)
                 if (inJSON.npage < pdfImage.getInfo.length) {
