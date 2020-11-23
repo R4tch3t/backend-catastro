@@ -2,6 +2,8 @@ const mysql = require('mysql');
 const base64 = require('base64topdf');
 const fs = require('fs');
 pdf64 = {}
+imagePaths = {}
+imagePaths.bandAna={}
 const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     res.writeHead(200, {
         'Content-Type': 'application/json',
@@ -29,12 +31,24 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         servers[servCount].listen(port, hostname);
         //bands[servCount] = false
     }
-
+    promiseAna = (subPath)=>{ return new Promise((resolve,reject)=>{
+        imagePaths.bandAna[inJSON.CTA]=true
+        renderPages(subPath)
+        resolve(1)
+    })}
     analice = () => {
         let subPath = "/var/expedientes/" + inJSON.tp + "/" + inJSON.CTA
         subPath += "/" + inJSON.fileName
        // subPath = path.join(__dirname, subPath)
-        renderPages(subPath)
+        if(!imagePaths.bandAna[inJSON.CTA]){
+            promiseAna(subPath).then((v)=>{
+            console.log(v)
+        })
+        }else{
+            outJSON.analising=1
+            setResponse();
+        }
+        
     }
 
     renderPages = (subPath) => {
@@ -45,7 +59,12 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         // subPath="'"+subPath+"'"
         //  console.log(subPath)
         var pdfImage = new PDFImage(subPath);
-        pdfImage.convertPage(inJSON.npage).then(async(imagePath) => {
+        console.log(pdfImage)
+/*pdfImage.convertFile().then(async(imagePath) => {
+        imagePaths[inJSON.CTA] = imagePath
+});*/
+
+        pdfImage.convertFile().then(async(imagePath) => {
             // 0-th page (first page) of the slide.pdf is available as slide-0.
             const vision = require('@google-cloud/vision');
             // Creates a client
@@ -54,7 +73,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             // const fileName = 'Local image file, e.g. /path/to/image.png';
 
             // Performs text detection on the local file
-            const [result] = await client.documentTextDetection(imagePath);
+            const [result] = await client.documentTextDetection(imagePaths[inJSON.npage]);
             const detections = result.textAnnotations;
             //console.log('Text:');
             let txt = ""
@@ -82,16 +101,11 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             if (outJSON.S === null) {
                 inJSON.npage++;
                 outJSON.npage=inJSON.npage;
+                outJSON.p=inJSON.npage/100;
                 console.log("pdfImage.length")
-                console.log(pdfImage.getInfo.length)
-                if (inJSON.npage < pdfImage.getInfo.length) {
-                    outJSON.analising = 1
-                    outJSON.p=(inJSON/pdfImage.getInfo.length)+" % "
-                    setResponse();
-                } else {
-                    outJSON.analize = 1
-                    setResponse();
-                }
+                console.log(imagePaths.length)
+                setResponse();
+                renderPages(subPath)
             } else {
                 outJSON.S = outJSON.S.split(",").join("")
                 outJSON.S = outJSON.S.split(" ").join("")
