@@ -12,7 +12,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     let inJSON = '';
     var outJSON = {};
     outJSON.error = {};
-    let npage = 0
+   // let npage = 0
     var con = mysql.createConnection({
         host: "localhost",
         user: process.env.NODE_MYSQL_USER,
@@ -45,7 +45,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         // subPath="'"+subPath+"'"
         //  console.log(subPath)
         var pdfImage = new PDFImage(subPath);
-        pdfImage.convertPage(npage).then(async(imagePath) => {
+        pdfImage.convertPage(inJSON.npage).then(async(imagePath) => {
             // 0-th page (first page) of the slide.pdf is available as slide-0.
             const vision = require('@google-cloud/vision');
             // Creates a client
@@ -80,9 +80,13 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                     //console.log(txt)
             });
             if (outJSON.S === null) {
-                npage++;
-                if (npage < 10) {
-                    renderPages(subPath)
+                inJSON.npage++;
+                console.log("pdfImage.length")
+                console.log(pdfImage.getInfo.length)
+                if (inJSON.npage < pdfImage.getInfo.length) {
+                    outJSON.analising = 1
+                    outJSON.p=(inJSON/pdfImage.getInfo.length)+" % "
+                    setResponse();
                 } else {
                     outJSON.analize = 1
                     setResponse();
