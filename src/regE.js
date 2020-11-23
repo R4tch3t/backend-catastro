@@ -64,7 +64,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
        //  console.log('getLength')
          while(bandL){
         try{
-            await sleep(300)
+            await sleep(100)
             if(!bandL2){
                 bandL2=true
             pdfImage.convertPage(lengthP[inJSON.CTA]).then((imagePath) => {

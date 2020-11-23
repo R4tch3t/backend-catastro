@@ -4,7 +4,7 @@ portC="3031"
 i="0"
 mkdir src/upPdf
 
-while [ $i -lt 64 ]
+while [ $i -lt 1024 ]
 do
 str="let http = require('https');
 
@@ -28,7 +28,7 @@ str+="http=require('http');"
 str+="console.log(e);"
 str+="}"
 str+="servers.push(http.createServer(options,regE.regE(servers, servers.length, port, hostname)));" 
-str+="servers[servers.length - 1].maxConnections = 128;" 
+str+="servers[servers.length - 1].maxConnections = 1024;" 
 str+="servers[servers.length - 1].listen(port, hostname, () => {"
 str+="console.log('Server running at http://'+hostname+':'+port+'/');"
 str+="});"

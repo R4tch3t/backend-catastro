@@ -27,7 +27,7 @@ forever start src/registrarU.js &
 forever start src/saveDataL.js &
 forever start src/checkPorts.js &
 forever start src/renderEscritura.js
-while [ $i -lt 64 ]
+while [ $i -lt 1024 ]
 do
 forever start "src/upPdf/registrarE$i.js"
 i=$[$i+1]
