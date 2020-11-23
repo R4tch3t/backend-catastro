@@ -41,14 +41,11 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     analice = () => {
         let subPath = "/var/expedientes/" + inJSON.tp + "/" + inJSON.CTA
         subPath += "/" + inJSON.fileName
-        console.log("analising")
-       // subPath = path.join(__dirname, subPath)
+        // subPath = path.join(__dirname, subPath)
         //if(!imagePaths.bandAna[inJSON.CTA]){
             promiseAna(subPath).then((v)=>{
-            console.log(v)
+        //    console.log(v)
         });
-        console.log("inJSON.analize"+inJSON.analize)
-        console.log("inJSON.analising "+inJSON.analising)
         /*}else{
             outJSON.analising=1
             outJSON.p=(inJSON.npage/15*100)+" % "
@@ -64,7 +61,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
          let bandL = true
          let bandL2 = false
          pdf64.stackAna[inJSON.CTA] = []
-         console.log('getLength')
+       //  console.log('getLength')
          while(bandL){
         try{
             await sleep(300)
@@ -72,12 +69,12 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                 bandL2=true
             pdfImage.convertPage(lengthP[inJSON.CTA]).then((imagePath) => {
                 pdf64.stackAna[inJSON.CTA].push(imagePath);
-                console.log(imagePath)
+              //  console.log(imagePath)
                 lengthP[inJSON.CTA]++;
                 bandL2=false
             }).catch(e=>{
-                console.log(e)
-                console.log(pdf64.stackAna[inJSON.CTA])
+                //console.log(e)
+               // console.log(pdf64.stackAna[inJSON.CTA])
                 bandL2=false
                 bandL=false    
             })
@@ -85,9 +82,9 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             
            
         }catch(e){
-            console.log(e)
-            console.log(lengthP)
-            console.log(pdf64.stackAna[inJSON.CTA])
+            //console.log(e)
+            //console.log(lengthP)
+            //console.log(pdf64.stackAna[inJSON.CTA])
             bandL=false
           //  return lengthP
         }
@@ -102,13 +99,13 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         // subPath="'"+subPath+"'"
         //  console.log(subPath)
         var pdfImage = new PDFImage(subPath);
-        console.log("inJSON.npage")
-        console.log(inJSON.npage)
+       // console.log("inJSON.npage")
+       // console.log(inJSON.npage)
         if(lengthP[inJSON.CTA]===undefined){
             lengthP[inJSON.CTA]=0
             await getLength(pdfImage)
         }
-        console.log(lengthP)
+        //console.log(lengthP)
      //   pdfImage.convertPage(inJSON.npage).then(async(imagePath) => {
             // 0-th page (first page) of the slide.pdf is available as slide-0.
             const vision = require('@google-cloud/vision');
@@ -144,8 +141,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                 prevLit = txt
                     //console.log(txt)
             });
-            console.log("outJSON.S")
-            console.log(outJSON.S)
+          //  console.log("outJSON.S")
+           // console.log(outJSON.S)
             if (!outJSON.S||outJSON.S === null||outJSON.S === undefined) {
                 inJSON.npage++;
                 outJSON.npage=inJSON.npage;
@@ -153,8 +150,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                 outJSON.p=(Math.round((inJSON.npage/lengthP[inJSON.CTA]*100)*100)/100)+" %";
                 outJSON.analising=1;
                 //outJSON.next=0;
-                console.log("pdfImage.length")
-                console.log(inJSON.npage)
+             //   console.log("pdfImage.length")
+              //  console.log(inJSON.npage)
                 setResponse();
                 //renderPages(subPath)
             } else {
@@ -249,7 +246,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
 
                                     // txt = txt.slice(0,txt.length-3)
                                     //  outJSON.next = 0
-                                    console.log(outJSON)
+                                   // console.log(outJSON)
 
                                     pdf64[inJSON.CTA] = '';
                                     currentCTA = undefined;
@@ -392,8 +389,8 @@ if (result.length !== 0) {
             //if (servers[servers.length - 1].connections < 2) {
             //bands[servCount] = true
             //new Promise((resolve,reject)=>{
-            console.log(inJSON.analize)
-            console.log(inJSON.analising)
+          //  console.log(inJSON.analize)
+           // console.log(inJSON.analising)
             if (!inJSON.analize) {
                 if (currentCTA === undefined || currentCTA === inJSON.CTA) {
                     currentCTA = inJSON.CTA
