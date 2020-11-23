@@ -2,8 +2,8 @@ const mysql = require('mysql');
 const base64 = require('base64topdf');
 const fs = require('fs');
 pdf64 = {}
-imagePaths = {}
-imagePaths.bandAna={}
+pdf64.stackAna={}
+lengthP = {}
 const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     res.writeHead(200, {
         'Content-Type': 'application/json',
@@ -14,6 +14,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     let inJSON = '';
     var outJSON = {};
     outJSON.error = {};
+    
+   //  const imagePaths = async ()=>{ return (await pdfImage.convertFile()) }
    // let npage = 0
     var con = mysql.createConnection({
         host: "localhost",
@@ -32,26 +34,67 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         //bands[servCount] = false
     }
     promiseAna = (subPath)=>{ return new Promise((resolve,reject)=>{
-        imagePaths.bandAna[inJSON.CTA]=true
+       // imagePaths.bandAna[inJSON.CTA]=true
         renderPages(subPath)
         resolve(1)
     })}
     analice = () => {
         let subPath = "/var/expedientes/" + inJSON.tp + "/" + inJSON.CTA
         subPath += "/" + inJSON.fileName
+        console.log("analising")
        // subPath = path.join(__dirname, subPath)
-        if(!imagePaths.bandAna[inJSON.CTA]){
+        //if(!imagePaths.bandAna[inJSON.CTA]){
             promiseAna(subPath).then((v)=>{
             console.log(v)
-        })
-        }else{
+        });
+        console.log("inJSON.analize"+inJSON.analize)
+        console.log("inJSON.analising "+inJSON.analising)
+        /*}else{
             outJSON.analising=1
+            outJSON.p=(inJSON.npage/15*100)+" % "
+            console.log(outJSON)
             setResponse();
-        }
+        }*/
         
     }
-
-    renderPages = (subPath) => {
+    sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+    getLength=async (pdfImage)=>{
+         let bandL = true
+         let bandL2 = false
+         pdf64.stackAna[inJSON.CTA] = []
+         console.log('getLength')
+         while(bandL){
+        try{
+            await sleep(300)
+            if(!bandL2){
+                bandL2=true
+            pdfImage.convertPage(lengthP[inJSON.CTA]).then((imagePath) => {
+                pdf64.stackAna[inJSON.CTA].push(imagePath);
+                console.log(imagePath)
+                lengthP[inJSON.CTA]++;
+                bandL2=false
+            }).catch(e=>{
+                console.log(e)
+                console.log(pdf64.stackAna[inJSON.CTA])
+                bandL2=false
+                bandL=false    
+            })
+            }
+            
+           
+        }catch(e){
+            console.log(e)
+            console.log(lengthP)
+            console.log(pdf64.stackAna[inJSON.CTA])
+            bandL=false
+          //  return lengthP
+        }
+    }
+        
+    }
+    renderPages = async (subPath) => {
         var PDFImage = require("pdf-image").PDFImage;
         //const url = require('url');
         //subPath = url.pathToFileURL(subPath);
@@ -59,12 +102,14 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         // subPath="'"+subPath+"'"
         //  console.log(subPath)
         var pdfImage = new PDFImage(subPath);
-        console.log(pdfImage)
-/*pdfImage.convertFile().then(async(imagePath) => {
-        imagePaths[inJSON.CTA] = imagePath
-});*/
-
-        pdfImage.convertFile().then(async(imagePath) => {
+        console.log("inJSON.npage")
+        console.log(inJSON.npage)
+        if(lengthP[inJSON.CTA]===undefined){
+            lengthP[inJSON.CTA]=0
+            await getLength(pdfImage)
+        }
+        console.log(lengthP)
+     //   pdfImage.convertPage(inJSON.npage).then(async(imagePath) => {
             // 0-th page (first page) of the slide.pdf is available as slide-0.
             const vision = require('@google-cloud/vision');
             // Creates a client
@@ -73,7 +118,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             // const fileName = 'Local image file, e.g. /path/to/image.png';
 
             // Performs text detection on the local file
-            const [result] = await client.documentTextDetection(imagePaths[inJSON.npage]);
+            const imagePath = pdf64.stackAna[inJSON.CTA][inJSON.npage]
+            const [result] = await client.documentTextDetection(imagePath);
             const detections = result.textAnnotations;
             //console.log('Text:');
             let txt = ""
@@ -98,14 +144,19 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                 prevLit = txt
                     //console.log(txt)
             });
-            if (outJSON.S === null) {
+            console.log("outJSON.S")
+            console.log(outJSON.S)
+            if (!outJSON.S||outJSON.S === null||outJSON.S === undefined) {
                 inJSON.npage++;
                 outJSON.npage=inJSON.npage;
-                outJSON.p=inJSON.npage/100;
+                outJSON.lengthP=lengthP[inJSON.CTA];
+                outJSON.p=(Math.round((inJSON.npage/lengthP[inJSON.CTA]*100)*100)/100)+" %";
+                outJSON.analising=1;
+                //outJSON.next=0;
                 console.log("pdfImage.length")
-                console.log(imagePaths.length)
+                console.log(inJSON.npage)
                 setResponse();
-                renderPages(subPath)
+                //renderPages(subPath)
             } else {
                 outJSON.S = outJSON.S.split(",").join("")
                 outJSON.S = outJSON.S.split(" ").join("")
@@ -120,6 +171,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                     sql += ` WHERE CTA=${inJSON.CTA}`
                     }*/
                     outJSON.analize = 1
+                    outJSON.p="- ANALISIS COMPLETADO - 100 %"
 
 
                     // txt = txt.slice(0,txt.length-3)
@@ -128,12 +180,13 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
 
                     pdf64[inJSON.CTA] = '';
                     currentCTA = undefined;
+                    lengthP[inJSON.CTA]=undefined
                     setResponse();
                 });
             }
-        }).catch(e => {
+        /*}).catch(e => {
             console.log(e)
-        });
+        });*/
     }
 
     registrar = () => {
@@ -331,7 +384,7 @@ if (result.length !== 0) {
 
             outJSON.error.name = `${e}`;
         }
-
+        
         if (inJSON.CTA !== undefined) {
 
             //console.log(inJSON.CTA)
@@ -339,7 +392,8 @@ if (result.length !== 0) {
             //if (servers[servers.length - 1].connections < 2) {
             //bands[servCount] = true
             //new Promise((resolve,reject)=>{
-            //  console.log(con.state)
+            console.log(inJSON.analize)
+            console.log(inJSON.analising)
             if (!inJSON.analize) {
                 if (currentCTA === undefined || currentCTA === inJSON.CTA) {
                     currentCTA = inJSON.CTA
