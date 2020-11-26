@@ -113,7 +113,7 @@ const server = http.createServer(options, (req, res) => {
 
     }
 
-    checkPorts = (port = 3031) => {
+    checkPorts = (port = 3131) => {
         try {
             switch (parseInt(inJSON.op)) {
                 case 0:
