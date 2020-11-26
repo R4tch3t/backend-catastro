@@ -10,10 +10,11 @@ try {
         cert: fs.readFileSync(path.join(__dirname, "cert/server.cer"))
     }
 } catch (e) {
-    //   http = require('http');
+       https = require('http');
     console.log(e)
-}
-var app = express();
+} finally {
+
+let app = express();
 function setResponseHeaders(res, filename) {
     res.header('Content-disposition', 'inline; filename=' + filename);
     res.header('Content-type', 'application/pdf');
@@ -51,3 +52,5 @@ app.get('/expedientes/:tp/:CTA/:escritura', function(req, res){
         console.log(e)
     }
 });
+
+}
