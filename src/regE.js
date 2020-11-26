@@ -35,6 +35,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     }
     promiseAna = (subPath)=>{ return new Promise((resolve,reject)=>{
        // imagePaths.bandAna[inJSON.CTA]=true
+
         renderPages(subPath)
         resolve(1)
     })}
@@ -43,7 +44,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         subPath += "/" + inJSON.fileName
         // subPath = path.join(__dirname, subPath)
         //if(!imagePaths.bandAna[inJSON.CTA]){
-            promiseAna(subPath).then((v)=>{
+        promiseAna(subPath).then((v)=>{
         //    console.log(v)
         });
         /*}else{
@@ -64,7 +65,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
        //  console.log('getLength')
          while(bandL){
         try{
-            await sleep(100)
+            await sleep(133)
             if(!bandL2){
                 bandL2=true
             pdfImage.convertPage(lengthP[inJSON.CTA]).then((imagePath) => {
@@ -102,8 +103,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
        // console.log("inJSON.npage")
        // console.log(inJSON.npage)
         if(lengthP[inJSON.CTA]===undefined){
-            lengthP[inJSON.CTA]=0
-            await getLength(pdfImage)
+            lengthP[inJSON.CTA]=0;
+            await getLength(pdfImage);
         }
         //console.log(lengthP)
      //   pdfImage.convertPage(inJSON.npage).then(async(imagePath) => {
@@ -144,11 +145,19 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
           //  console.log("outJSON.S")
            // console.log(outJSON.S)
             if (!outJSON.S||outJSON.S === null||outJSON.S === undefined) {
-                inJSON.npage++;
-                outJSON.npage=inJSON.npage;
-                outJSON.lengthP=lengthP[inJSON.CTA];
-                outJSON.p=(Math.round((inJSON.npage/lengthP[inJSON.CTA]*100)*100)/100)+" %";
-                outJSON.analising=1;
+                if(inJSON.npage<lengthP[inJSON.CTA]){
+                    inJSON.npage++;
+                    outJSON.npage=inJSON.npage;
+                    outJSON.lengthP=lengthP[inJSON.CTA];
+                    outJSON.p=(Math.round((inJSON.npage/lengthP[inJSON.CTA]*100)*100)/100)+" %";
+                    outJSON.analising=1;
+                }else{
+                    outJSON.analize = 1
+                    outJSON.p="- ANALISIS COMPLETADO - 100 %"
+                    pdf64[inJSON.CTA] = '';
+                    currentCTA = undefined;
+                    lengthP[inJSON.CTA]=undefined
+                }
                 //outJSON.next=0;
              //   console.log("pdfImage.length")
               //  console.log(inJSON.npage)
