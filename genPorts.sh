@@ -1,6 +1,6 @@
 #!/bin/bash
 str="";
-portC="3031"
+portC="3131"
 i="0"
 mkdir src/upPdf
 
