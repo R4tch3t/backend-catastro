@@ -151,9 +151,11 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                     outJSON.lengthP=lengthP[inJSON.CTA];
                     outJSON.p=(Math.round((inJSON.npage/lengthP[inJSON.CTA]*100)*100)/100)+" %";
                     outJSON.analising=1;
+
                 }else{
                     outJSON.analize = 1
                     outJSON.p="- ANALISIS COMPLETADO - 100 %"
+                    outJSON.S=outJSON.S.split(",").join("");
                     pdf64[inJSON.CTA] = '';
                     currentCTA = undefined;
                     lengthP[inJSON.CTA]=undefined
