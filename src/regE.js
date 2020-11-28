@@ -109,12 +109,13 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
         //console.log(lengthP)
      //   pdfImage.convertPage(inJSON.npage).then(async(imagePath) => {
             // 0-th page (first page) of the slide.pdf is available as slide-0.
+            if(inJSON.npage<lengthP[inJSON.CTA]){
             const vision = require('@google-cloud/vision');
             // Creates a client
             const client = new vision.ImageAnnotatorClient();
 
             // const fileName = 'Local image file, e.g. /path/to/image.png';
-
+            console.log(inJSON.npage)
             // Performs text detection on the local file
             const imagePath = pdf64.stackAna[inJSON.CTA][inJSON.npage]
             const [result] = await client.documentTextDetection(imagePath);
@@ -123,7 +124,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             let txt = ""
             let prevLit = ""
                 //  console.log("detections")
-                //  console.log(detections)
+                  //console.log(detections)
             outJSON.S = null
             detections.forEach(text => {
                 //txt+=text.description.slice(0,text.description.length-3)+" "
@@ -136,30 +137,34 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                 if (txt.includes("m²")) {
                     outJSON.S = prevLit
                 }
+                if (txt.includes("5-")) {
+                    const a = txt.split("5-")
+                    if(a.length>0){ 
+                        outJSON.S = a.join("")
+                    }else{ 
+                        outJSON.S = '0.00'
+                    }
+                }
                 if (prevLit.includes("=")) {
                     outJSON.S = txt.replace("M2", "").replace("m2", "");
                 }
                 prevLit = txt
-                    //console.log(txt)
+                console.log(txt)
             });
           //  console.log("outJSON.S")
-           // console.log(outJSON.S)
+            console.log(outJSON.S)
+            
             if (!outJSON.S||outJSON.S === null||outJSON.S === undefined) {
-                if(inJSON.npage<lengthP[inJSON.CTA]){
+                
+                    console.log(lengthP[inJSON.CTA])
+                    console.log(inJSON.npage)
                     inJSON.npage++;
                     outJSON.npage=inJSON.npage;
                     outJSON.lengthP=lengthP[inJSON.CTA];
                     outJSON.p=(Math.round((inJSON.npage/lengthP[inJSON.CTA]*100)*100)/100)+" %";
                     outJSON.analising=1;
 
-                }else{
-                    outJSON.analize = 1
-                    outJSON.p="- ANALISIS COMPLETADO - 100 %"
-                    outJSON.S=outJSON.S.split(",").join("");
-                    pdf64[inJSON.CTA] = '';
-                    currentCTA = undefined;
-                    lengthP[inJSON.CTA]=undefined
-                }
+               
                 //outJSON.next=0;
              //   console.log("pdfImage.length")
               //  console.log(inJSON.npage)
@@ -192,6 +197,16 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                     setResponse();
                 });
             }
+             }else{
+                    outJSON.analize = 1
+                    outJSON.p="- ANALISIS COMPLETADO - 100 %"
+                    outJSON.S='0.00'
+
+                    pdf64[inJSON.CTA] = '';
+                    currentCTA = undefined;
+                    lengthP[inJSON.CTA]=undefined
+                    setResponse();
+                }
         /*}).catch(e => {
             console.log(e)
         });*/
