@@ -115,7 +115,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             const client = new vision.ImageAnnotatorClient();
 
             // const fileName = 'Local image file, e.g. /path/to/image.png';
-            console.log(inJSON.npage)
+            //console.log(inJSON.npage)
             // Performs text detection on the local file
             const imagePath = pdf64.stackAna[inJSON.CTA][inJSON.npage]
             const [result] = await client.documentTextDetection(imagePath);
@@ -149,15 +149,15 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                     outJSON.S = txt.replace("M2", "").replace("m2", "");
                 }
                 prevLit = txt
-                console.log(txt)
+              //  console.log(txt)
             });
           //  console.log("outJSON.S")
-            console.log(outJSON.S)
+            //console.log(outJSON.S)
             
             if (!outJSON.S||outJSON.S === null||outJSON.S === undefined) {
                 
-                    console.log(lengthP[inJSON.CTA])
-                    console.log(inJSON.npage)
+                   // console.log(lengthP[inJSON.CTA])
+                   // console.log(inJSON.npage)
                     inJSON.npage++;
                     outJSON.npage=inJSON.npage;
                     outJSON.lengthP=lengthP[inJSON.CTA];
