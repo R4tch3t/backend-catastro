@@ -42,6 +42,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
     analice = () => {
         let subPath = "/var/expedientes/" + inJSON.tp + "/" + inJSON.CTA
         subPath += "/" + inJSON.fileName
+        
         // subPath = path.join(__dirname, subPath)
         //if(!imagePaths.bandAna[inJSON.CTA]){
         promiseAna(subPath).then((v)=>{
@@ -121,8 +122,8 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
             const [result] = await client.documentTextDetection(imagePath);
             const detections = result.textAnnotations;
             //console.log('Text:');
-            let txt = ""
-            let prevLit = ""
+            let txt = "";
+            let prevLit = "";
                 //  console.log("detections")
                   //console.log(detections)
             outJSON.S = null

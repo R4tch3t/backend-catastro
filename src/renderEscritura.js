@@ -31,7 +31,9 @@ app.get('/expedientes/:tp/:CTA/:escritura', function(req, res){
             // file = tmpdir + filename;
         setResponseHeaders(res, req.params.escritura);
         //fs.createReadStream(path.join(__dirname, filename)).pipe(res);
-        fs.createReadStream(filename).pipe(res);
+        if(fs.existsSync(filename)){
+            fs.createReadStream(filename).pipe(res);
+        }
         /*
         //To Create in the fly pdf
         (async function() {

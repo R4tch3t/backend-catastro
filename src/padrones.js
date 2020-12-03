@@ -14,7 +14,9 @@ try {
     http = require('http');
     console.log(e)
 }
-
+const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 const server = http.createServer(options, (req, res) => {
     res.writeHead(200, {
         'Content-Type': 'application/json',
@@ -33,7 +35,8 @@ const server = http.createServer(options, (req, res) => {
     });
 
     // console.log(`${res.host} : ${res.statusCode}`);
-    setResponse = () => {
+    setResponse = async () => {
+        //await sleep(6000);
         outJSON = JSON.stringify(outJSON);
         res.end(`${outJSON}`);
         con.destroy();
@@ -182,7 +185,7 @@ const server = http.createServer(options, (req, res) => {
         }
     });
 });
-
+//server.maxConnections = 1
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
