@@ -42,7 +42,7 @@ setResponse = () => {
   server.listen(port, hostname);
 }
 padronR = (subqueryB) => {
-const sql = `SELECT * FROM padronr p ${subqueryB} ORDER by p.CTA ASC`
+const sql = `SELECT * FROM padronr p, ubipredior u ${subqueryB} ORDER by p.CTA ASC`
 con.query(sql, (err, result, fields) => {
       if (!err) {
         if (result.length > 0) {
@@ -62,17 +62,17 @@ padronU = () => {
         console.log(`Err on con: ${err}`);
         
       } else {
-        let subqueryB = ''
+        let subqueryB = 'WHERE u.CTA=p.CTA'
         //var subqueryN = ''
         if (inJSON.CTAnombre !== '') {
           if (inJSON.tipoB != undefined && inJSON.tipoB === 0) {
-              subqueryB = `WHERE p.CTA=${inJSON.CTAnombre}`
+              subqueryB = `WHERE p.CTA=${inJSON.CTAnombre} AND u.CTA=p.CTA`
           }
           if (inJSON.tipoB != undefined && inJSON.tipoB === 1) {
-            subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%'`
+            subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%' AND u.CTA=p.CTA`
           }
         }
-        let sql = `SELECT * FROM padronu p ${subqueryB} ORDER by p.CTA ASC`
+        let sql = `SELECT * FROM padronu p, ubiprediou u ${subqueryB} ORDER by p.CTA ASC`
         
         con.query(sql, (err, result, fields) => {
           

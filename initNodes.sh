@@ -26,6 +26,7 @@ forever start src/registrarO5.js &
 forever start src/registrarU.js &
 forever start src/saveDataL.js &
 forever start src/checkPorts.js &
+forever start src/genCerti.js &
 forever start src/renderEscritura.js
 while [ $i -lt 128 ]
 do
