@@ -234,7 +234,7 @@ const registrarE = (servers, servCount, port, hostname) => (req, res) => {
                             outJSON.next = 1
                             setResponse();
                         } else {
-                            inJSON.CTA = parseInt(inJSON.CTA)
+                            
                             pdf64[inJSON.CTA] = pdf64[inJSON.CTA].split('base64,')[1]
                                 //  console.log(`fin ${pdf64}`)
                             if (pdf64[inJSON.CTA]) {
@@ -418,6 +418,7 @@ if (result.length !== 0) {
             //new Promise((resolve,reject)=>{
           //  console.log(inJSON.analize)
            // console.log(inJSON.analising)
+            inJSON.CTA = parseInt(inJSON.CTA)
             if (!inJSON.analize) {
                 if (currentCTA === undefined || currentCTA === inJSON.CTA) {
                     currentCTA = inJSON.CTA
