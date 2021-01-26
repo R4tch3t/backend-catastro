@@ -51,7 +51,7 @@ con.query(sql, (err, result, fields) => {
           //outJSON.ubipredior = result
           outJSON.ubipredior = {}
           outJSON.contribuyenter = result  
-          setResponse()
+          
           /*outJSON.ubipredior = {};
           result.forEach(e => {
             outJSON.ubipredior[`${e.CTA}`] = e
@@ -75,7 +75,7 @@ con.query(sql, (err, result, fields) => {
           */
         }
       }
-      
+      setResponse()
 })    
 }
 
