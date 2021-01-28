@@ -17,6 +17,7 @@ const mysql = require('mysql');
  }
 
 const server = http.createServer(options,(req, res) => {
+  try{
   res.writeHead(200, {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin' : '*',
@@ -35,13 +36,18 @@ const server = http.createServer(options,(req, res) => {
 
  // console.log(`${res.host} : ${res.statusCode}`);
 setResponse = () => {
-  outJSON = JSON.stringify(outJSON);
-  res.end(`${outJSON}`);
-  con.destroy();
-  server.close();
-  server.listen(port, hostname);
+  try{
+    outJSON = JSON.stringify(outJSON);
+    res.end(`${outJSON}`);
+    con.destroy();
+    server.close();
+    server.listen(port, hostname);
+  }catch(e){
+
+  }
 }
 padronR = (subqueryB) => {
+try{
 const sql = `SELECT * FROM padronr p, ubipredior u ${subqueryB} ORDER by p.CTA ASC`
 con.query(sql, (err, result, fields) => {
       if (!err) {
@@ -72,6 +78,9 @@ con.query(sql, (err, result, fields) => {
         setResponse()
       });
 })    
+}catch(e){
+  
+}
 }
 
 padronU = () => {
@@ -206,6 +215,9 @@ padronU = () => {
         res.end()
       }
   });
+}catch(e){
+
+}
 });
 
 server.listen(port, hostname, () => {
