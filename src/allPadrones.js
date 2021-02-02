@@ -46,9 +46,9 @@ setResponse = () => {
 
   }
 }
-padronR = (subqueryB) => {
+padronR = (subqueryB,sql) => {
 try{
-const sql = `SELECT * FROM padronr p, ubipredior u ${subqueryB} ORDER by p.CTA ASC`
+sql = `SELECT * FROM padronr p, ubipredior u ${subqueryB} ORDER by p.CTA ASC`
 con.query(sql, (err, result, fields) => {
       if (!err) {
         if (result.length > 0) {
@@ -64,14 +64,14 @@ con.query(sql, (err, result, fields) => {
       subqueryB = ''
       //var subqueryN = ''
       if (inJSON.CTAnombre !== '') {
-        if (inJSON.tipoB != undefined && inJSON.tipoB === 0) {
+        if (inJSON.tipoB !== undefined && inJSON.tipoB === 0) {
             subqueryB = `WHERE p.CTA=${inJSON.CTAnombre}`
         }
-        if (inJSON.tipoB != undefined && inJSON.tipoB === 1) {
+        if (inJSON.tipoB !== undefined && inJSON.tipoB === 1) {
           subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%'`
         }
       }
-      const sql = `SELECT * FROM padronr p ${subqueryB} ORDER by p.CTA ASC`
+      sql = `SELECT * FROM padronr p ${subqueryB} ORDER by p.CTA ASC`
       con.query(sql, (err, result, fields) => {
         outJSON.contribuyenter = result
         
@@ -84,8 +84,8 @@ con.query(sql, (err, result, fields) => {
 }
 
 padronU = () => {
-    try{
-    con.connect((err) => {
+  con.connect((err) => {  
+  try{
       outJSON = {};
       outJSON.error = {};
       if (err) {
@@ -95,10 +95,10 @@ padronU = () => {
         let subqueryB = ''
         //var subqueryN = ''
         if (inJSON.CTAnombre !== '') {
-          if (inJSON.tipoB != undefined && inJSON.tipoB === 0) {
+          if (inJSON.tipoB !== undefined && inJSON.tipoB === 0) {
               subqueryB = `WHERE p.CTA=${inJSON.CTAnombre}`
           }
-          if (inJSON.tipoB != undefined && inJSON.tipoB === 1) {
+          if (inJSON.tipoB !== undefined && inJSON.tipoB === 1) {
             subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%'`
           }
         }
@@ -162,10 +162,10 @@ padronU = () => {
           subqueryB = 'WHERE u.CTA=p.CTA'
               //var subqueryN = ''
               if (inJSON.CTAnombre !== '') {
-                if (inJSON.tipoB != undefined && inJSON.tipoB === 0) {
+                if (inJSON.tipoB !== undefined && inJSON.tipoB === 0) {
                     subqueryB = `WHERE p.CTA=${inJSON.CTAnombre} AND u.CTA=p.CTA`
                 }
-                if (inJSON.tipoB != undefined && inJSON.tipoB === 1) {
+                if (inJSON.tipoB !== undefined && inJSON.tipoB === 1) {
                   subqueryB = `WHERE p.contribuyente LIKE '%${inJSON.CTAnombre}%' AND u.CTA=p.CTA`
                 }
               }
@@ -175,18 +175,18 @@ padronU = () => {
                 result.forEach(e => {
                   outJSON.ubiprediou[`${e.CTA}`] = e
                 });
-                padronR(subqueryB)
+                padronR(subqueryB,sql)
               });
           //padronR(subqueryB)
         });
 
 
       }
-    });
+    
     }catch(e){
       console.log(e)
     }
-
+    });
  }
 
   req.setEncoding('utf8');
@@ -208,7 +208,7 @@ padronU = () => {
           
       }
       
-      if (inJSON.CTAnombre!=undefined) {
+      if (inJSON.CTAnombre!==undefined) {
         padronU()
         
       }else{
