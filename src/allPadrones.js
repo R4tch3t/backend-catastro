@@ -50,6 +50,7 @@ padronR = (subqueryB,sql) => {
 try{
 sql = `SELECT * FROM padronr p, ubipredior u ${subqueryB} ORDER by p.CTA ASC`
 con.query(sql, (err, result, fields) => {
+  try{
       if (!err) {
         if (result.length > 0) {
           //outJSON.contribuyenter = result
@@ -61,6 +62,9 @@ con.query(sql, (err, result, fields) => {
          
         }
       }
+    }catch(e){
+      
+    }
       subqueryB = ''
       //var subqueryN = ''
       if (inJSON.CTAnombre !== '') {
@@ -171,10 +175,16 @@ padronU = () => {
               }
               sql = `SELECT * FROM padronu p, ubiprediou u ${subqueryB} ORDER by p.CTA ASC`
               con.query(sql, (err, result, fields) => {
+                try{
                 outJSON.ubiprediou = {};
-                result.forEach(e => {
-                  outJSON.ubiprediou[`${e.CTA}`] = e
-                });
+                if(result){
+                  result.forEach(e => {
+                    outJSON.ubiprediou[`${e.CTA}`] = e
+                  });
+                }
+              }catch(e){
+
+              }
                 padronR(subqueryB,sql)
               });
           //padronR(subqueryB)
