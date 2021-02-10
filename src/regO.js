@@ -30,15 +30,15 @@ const registrarO = (servers, servCount, port, hostname) => (req, res) => {
   insertOrden = () => {
 
     if (inJSON.dateUp === '') {
-      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,otroservicio) VALUES `
+      sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,otroservicio,obs) VALUES `
       sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
       sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}')`;
+      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}','${inJSON.obs}')`;
     } else {
       sql = `INSERT INTO ordenes${inJSON.tp} (CTA,m1,m2,tc,zona,bg,periodo,total,idEmpleado,otroservicio,dateUp) VALUES `
       sql += `(${inJSON.CTA},'${inJSON.m1}','${inJSON.m2}',`
       sql += `'${inJSON.tc}','${inJSON.zona}','${inJSON.bg}',`
-      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}','${inJSON.dateUp}')`;
+      sql += `'${inJSON.periodo}','${inJSON.total}','${inJSON.idEmpleado}','${inJSON.otroservicio}','${inJSON.obs}','${inJSON.dateUp}')`;
     }
     con.query(sql, (err, result, fields) => {
       if (!err) {
@@ -144,7 +144,7 @@ const registrarO = (servers, servCount, port, hostname) => (req, res) => {
                           outJSON.folio = result[0].idFolio
                           sql = `UPDATE ordenes${inJSON.tp} SET m1='${inJSON.m1}', m2='${inJSON.m2}', tc='${inJSON.tc}', `
                           sql += `zona='${inJSON.zona}', bg='${inJSON.bg}', total='${inJSON.total}', periodo='${inJSON.periodo}', `
-                          sql += `otroservicio='${inJSON.otroservicio}', dateUp='${inJSON.dateUp}' WHERE idOrden=${idOrden}`
+                          sql += `otroservicio='${inJSON.otroservicio}', obs='${inJSON.obs}', dateUp='${inJSON.dateUp}' WHERE idOrden=${idOrden}`
                           con.query(sql, (err, result, fields) => {
                             if (!err) {
                               let c = 0;
