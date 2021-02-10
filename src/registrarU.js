@@ -65,7 +65,7 @@ const server = http.createServer(options, (req, res) => {
                                 sql = `INSERT INTO usuarios (idUsuario,nombre,correo,edad,avatar64,pass,idRol) VALUES `
                                 sql += `(${inJSON.idUsuario},'${inJSON.nombre}',`
                                 sql += `'${inJSON.correo}',${inJSON.edad},`
-                                sql += `${inJSON.avatar64},${inJSON.pass},`;
+                                sql += `'${inJSON.avatar64}','${inJSON.pass}',`;
                                 sql += `${inJSON.idRol})`;
                                 con.query(sql, function(err, result) {
                                     if (err) {
